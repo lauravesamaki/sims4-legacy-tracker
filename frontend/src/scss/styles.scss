@@ -1,1 +1,51 @@
 @import "bootstrap/scss/bootstrap";
+
+.nav-bg, .footer-bg {
+    background-color: #222222;
+}
+
+.navbar-nav .nav-link {
+    color:white;
+}
+.nav-link:hover {
+    color: #00db37;
+}
+.nav-link:active {
+    color: #00db37;
+}
+.nav-link[tabindex]:focus {
+    color: #00db37;
+}
+
+.link-row {
+    transform: translateX(-130px);
+}
+
+.btn-login-nav {
+    background-color: whitesmoke;
+    transform: translateX(-25px);
+}
+.btn-login-nav:hover {
+    background-color: #00db37;
+    color: #222222;
+}
+
+.btn-signup-nav {
+    background-color: #222222;
+    border-color: #00db37;
+    color: #00db37;
+}
+.btn-signup-nav:hover {
+    background-color: #00db37;
+}
+
+.card {
+    border: none;
+}
+
+.btn-login, .btn-signup {
+    background-color: #00db37;
+}
+.btn-login:hover, .btn-signup:hover {
+    background-color: #4df376;
+}

@@ -1,11 +1,29 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 import './scss/styles.scss'
 import * as bootstrap from 'bootstrap'
-import App from './App.jsx'
+import Layout from './pages/Layout'
+import Home from './pages/Home'
+import Rules from './pages/Rules'
+import Randomizer from './pages/Randomizer'
+import NoPage from './pages/NoPage'
+import LogIn from './pages/LogIn'
+import SignUp from './pages/SignUp'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path='rules' element={<Rules />} />
+          <Route path='randomizer' element={<Randomizer />} />
+          <Route path='signup' element={<SignUp />} />
+          <Route path='login' element={<LogIn />} />
+          <Route path='*' element={<NoPage />} />        
+        </Route>
+      </Routes>
+    </BrowserRouter>
   </StrictMode>,
 )
