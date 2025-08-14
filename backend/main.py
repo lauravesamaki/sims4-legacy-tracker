@@ -38,13 +38,11 @@ def login():
     hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
     user = User.query.filter_by(username=username).first()
-    if user:
-        json_user = user.to_json()
-
-    if json_user.password == hashed_password:
-        return jsonify({"message": f"Welcome {username}!"})
+    
+    if user and user.password == hashed_password:
+        return jsonify({"message": f"Welcome {username}!"}), 200
     else:
-        return jsonify({"message": "Invalid credentials"}), 401
+        return jsonify({"message": "User not found"}), 404
 
 
 # Sim APIs
