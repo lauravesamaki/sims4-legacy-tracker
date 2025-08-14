@@ -1,5 +1,6 @@
 from config import db
-from sqlalchemy import Sequence, ForeignKey, Integer, String
+from sqlalchemy import Sequence, ForeignKey, Integer, String, DateTime, Text
+from datetime import datetime
 
 class Sim(db.Model):
     id = db.Column(Integer, Sequence("sim_id_seq", start=1), primary_key=True)
@@ -33,4 +34,20 @@ class Relationship(db.Model):
             "simId": self.sim_id,
             "relatedToId": self.related_sim_id,
             "relationshipType": self.relationship_type
+        }
+
+class User(db.Model):
+    id = db.Column(Integer, Sequence("user_id_seq", start=1), primary_key=True)
+    username = db.Column(String(30), unique=True, nullable=False)
+    password = db.Column(Text, nullable=False)
+    created_at = db.Column(DateTime, nullable=False, default=datetime.today)
+    modified_at = db.Column(DateTime)
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "password": self.password,
+            "createdAt": self.created_at,
+            "modifiedAt": self.modified_at
         }
