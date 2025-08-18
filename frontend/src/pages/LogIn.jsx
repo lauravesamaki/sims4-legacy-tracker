@@ -1,8 +1,10 @@
 import { useState } from "react"
+import { useNavigate } from 'react-router-dom'
 
 export default function LogIn() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const navigate = useNavigate()
 
     const onSubmit = async (e) => {
         e.preventDefault()
@@ -26,7 +28,9 @@ export default function LogIn() {
             const data = await response.json()
             alert(data.message)
         } else {
-            // add redirection after successful login to userpage
+            const data = await response.json()
+            localStorage.setItem('token', data.access_token)
+            navigate('/user')
         }
     }
 
