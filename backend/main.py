@@ -1,9 +1,12 @@
 from flask import request, jsonify
 from config import app, db
 from models import Sim, Relationship, User
-import hashlib
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import create_access_token
 
-# User APIs
+bcrypt = Bcrypt(app)
+
+# User routes
 @app.route("/signup", methods=["POST"])
 def signup():
     data = request.json
@@ -15,7 +18,7 @@ def signup():
             jsonify({"message": "Missing username or password"}), 400
         )
     
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     new_user = User(username=username, password=hashed_password)
 
@@ -34,18 +37,51 @@ def login():
 
     if not username or not password:
         return jsonify({"message": "Missing username or password"}), 400
-    
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
     user = User.query.filter_by(username=username).first()
     
-    if user and user.password == hashed_password:
-        return jsonify({"message": f"Welcome {username}!"}), 200
+    if user and bcrypt.check_password_hash(user.password, password):
+        access_token = create_access_token(identity=username)
+        return jsonify({"access_token": access_token}), 200
     else:
         return jsonify({"message": "User not found"}), 404
 
+@app.route("/user/<username>", methods=["GET"])
+def get_user(username):
+    user = User.query.filter_by(username=username).first()
 
-# Sim APIs
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+    
+    data = request.json
+    sims = list(data.get("sims"))
+    return jsonify({"sims": sims})
+
+@app.route("/user/<int:user_id>", methods=["PATCH"])
+def update_user(user_id):
+    bcrypt = Bcrypt(app)
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+    
+    data = request.json
+    password = data.get("password")
+
+    # Hash password if it's given
+    if password:
+        hashed_password = bcrypt.generate_password_hash(password)
+    else:
+        hashed_password = None
+
+    user.username = data.get("username", user.username)
+    user.password = hashed_password or user.password
+
+    db.session.commit()
+
+    return jsonify({"message": "User succesfully updated"}), 200
+
+# Sim routes
 @app.route("/sims", methods=["GET"])
 def get_sims():
     sims = Sim.query.all()
@@ -108,7 +144,7 @@ def delete_sim(sim_id):
 
     return jsonify({"message": "Sim deleted!"}), 200
 
-# Relationship APIs
+# Relationship routes
 @app.route("/sim/<int:sim_id>/relationships", methods=["POST"])
 def add_relationship(sim_id):
     sim = Sim.query.get(sim_id)

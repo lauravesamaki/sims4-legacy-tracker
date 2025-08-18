@@ -1,15 +1,15 @@
 from config import db
-from sqlalchemy import Sequence, ForeignKey, Integer, String, DateTime, Text
+from sqlalchemy import Sequence, ForeignKey, Integer, String, DateTime, Text, ARRAY, Column
 from datetime import datetime
 
 class Sim(db.Model):
-    id = db.Column(Integer, Sequence("sim_id_seq", start=1), primary_key=True)
-    first_name = db.Column(String(64), nullable=False)
-    last_name = db.Column(String(64), nullable=False)
-    gender = db.Column(String(20), nullable=False)
-    cause_of_death = db.Column(String(64))
-    age_of_death = db.Column(String(20))
-    professional = db.Column(String(64))
+    id = Column(Integer, Sequence("sim_id_seq", start=1), primary_key=True)
+    first_name = Column(String(64), nullable=False)
+    last_name = Column(String(64), nullable=False)
+    gender = Column(String(20), nullable=False)
+    cause_of_death = Column(String(64))
+    age_of_death = Column(String(20))
+    professional = Column(String(64))
 
     def to_json(self):
         return {
@@ -23,10 +23,10 @@ class Sim(db.Model):
         }
     
 class Relationship(db.Model):
-    id = db.Column(Integer, Sequence("relationship_id_seq", start=1), primary_key=True)
-    sim_id = db.Column(Integer, ForeignKey("sim.id"), nullable=False)
-    related_sim_id = db.Column(Integer, ForeignKey("sim.id"), nullable=False)
-    relationship_type = db.Column(String(64), nullable=False)
+    id = Column(Integer, Sequence("relationship_id_seq", start=1), primary_key=True)
+    sim_id = Column(Integer, ForeignKey("sim.id"), nullable=False)
+    related_sim_id = Column(Integer, ForeignKey("sim.id"), nullable=False)
+    relationship_type = Column(String(64), nullable=False)
 
     def to_json(self):
         return {
@@ -37,11 +37,12 @@ class Relationship(db.Model):
         }
 
 class User(db.Model):
-    id = db.Column(Integer, Sequence("user_id_seq", start=1), primary_key=True)
-    username = db.Column(String(30), unique=True, nullable=False)
-    password = db.Column(Text, nullable=False)
-    created_at = db.Column(DateTime, nullable=False, default=datetime.today)
-    modified_at = db.Column(DateTime)
+    id = Column(Integer, Sequence("user_id_seq", start=1), primary_key=True)
+    username = Column(String(30), unique=True, nullable=False)
+    password = Column(Text, nullable=False)
+    sims = Column(ARRAY(Text))
+    created_at = Column(DateTime, nullable=False, default=datetime.today)
+    modified_at = Column(DateTime)
 
     def to_json(self):
         return {
