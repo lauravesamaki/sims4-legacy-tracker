@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import './scss/styles.scss'
+import './localization/i18n'
 import * as bootstrap from 'bootstrap'
 import Layout from './pages/Layout'
 import Home from './pages/Home'
@@ -13,6 +14,7 @@ import SignUp from './pages/SignUp'
 import PrivateRoutes from './pages/PrivateRoutes'
 import User from './pages/User'
 import LayoutUser from './pages/LayoutUser'
+import AddSim from './pages/AddSim'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -20,7 +22,8 @@ createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path='/' element={<LayoutUser />}>
           <Route element={<PrivateRoutes />}>
-            <Route path='/user' element={<User />} />
+            <Route path={`/user/${sessionStorage.getItem('user')}`} element={<User />} />
+            <Route path='/add_sim' element={<AddSim />} />
           </Route></Route>
         <Route path='/' element={<Layout />}>
           <Route index element={<Home />} />

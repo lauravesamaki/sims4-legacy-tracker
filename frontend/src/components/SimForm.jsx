@@ -7,6 +7,7 @@ const SimForm = ({ }) => {
     const [professional, setProfessional] = useState("")
     const [causeOfDeath, setCauseOfDeath] = useState("")
     const [ageOfDeath, setAgeOfDeath] = useState("")
+    const [isDead, setIsDead] = useState(false)
 
     const onSubmit = async (e) => {
         e.preventDefault()
@@ -34,69 +35,108 @@ const SimForm = ({ }) => {
             alert(data.message)
         }
         else {
-            //success
+            alert(data.message)
         }
     }
 
-    return <form onSubmit={onSubmit} class="row g-3">
-        <div class="container d-flex justify-content-center flex-wrap flex-row row-cols-2">
-            <div class="col-md-5">
-                <label htmlFor="firstName">First Name: </label>
+    console.log(isDead)
+    return (
+        <form class="row g-3" onSubmit={onSubmit()}>
+            <div class="col-md-6">
+                <label for="inputFirstName" class="form-label">First name</label>
                 <input 
                     type="text" 
-                    id="firstName" 
-                    value={firstName} 
+                    class="form-control" 
+                    id="inputFirstName"
+                    value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
+                    required
                 />
             </div>
-            <div class="col-md-5">
-                <label htmlFor="lastName">Last Name: </label>
+            <div class="col-md-6">
+                <label for="inputLastName" class="form-label">Last name</label>
                 <input 
                     type="text" 
-                    id="lastName" 
-                    value={lastName} 
+                    class="form-control" 
+                    id="inputLastName"
+                    value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
+                    required
                 />
             </div>
-            <div class="col-md-5">
-                <label htmlFor="gender">Gender: </label>
-                <input 
-                    type="text" 
-                    id="gender" 
+            <div class="col-md-6">
+                <label for="inputGender" class="form-label">Gender</label>
+                <select 
+                    class="form-select" 
+                    aria-label="Default select gender" 
                     value={gender} 
                     onChange={(e) => setGender(e.target.value)}
-                />
+                    required>
+                        <option selected disabled value="">Gender</option>
+                        <option value="1">Female</option>
+                        <option value="2">Male</option>
+                        <option value="3">Other</option>
+                </select>
             </div>
-            <div class="col-md-5">
-                <label htmlFor="professional">Professional: </label>
-                <input 
+            <div class="col-md-6">
+                <label for="inputProfessional" class="form-label">Professional</label>
+                <input
                     type="text" 
-                    id="professional" 
-                    value={professional} 
+                    class="form-control" 
+                    id="inputProfessional"
+                    value={professional}
                     onChange={(e) => setProfessional(e.target.value)}
                 />
             </div>
-            <div class="col-md-5">
-            <label htmlFor="causeOfDeath">Cause Of Death: </label>
-            <input 
-                type="text" 
-                id="causeOfDeath" 
-                value={causeOfDeath} 
-                onChange={(e) => setCauseOfDeath(e.target.value)}
-            />
+            <div class="col-12">
+                <div class="form-check mb-3">
+                    <input
+                        class="form-check-input" 
+                        type="checkbox"
+                        checked={isDead}
+                        onChange={() => setIsDead(!isDead)}
+                        id="checkIfDead"
+                    />
+                    <label class="form-check-label" for="checkIfDead">
+                        Has the sim died?
+                    </label>
+                </div>
             </div>
-            <div class="col-md-5">
-                <label htmlFor="ageOfDeath">Age Of Death: </label>
-                <input 
-                    type="text" 
-                    id="ageOfDeath" 
-                    value={ageOfDeath} 
-                    onChange={(e) => setAgeOfDeath(e.target.value)}
-                />
+            <div class="death-div row" hidden={!isDead}>
+                <div class="col-md-6">
+                    <label for="inputCauseOfDeath" class="form-label">Cause Of Death</label>
+                    <input
+                        type="text" 
+                        class="form-control" 
+                        id="inputCauseOfDeath"
+                        placeholder="Old age, fire etc"
+                        value={causeOfDeath}
+                        onChange={(e) => setCauseOfDeath(e.target.value)}
+                    />
+                </div>
+                <div class="col-md-6">
+                    <label for="inputAgeOfDeath" class="form-label">Age Of Death</label>
+                    <select 
+                        class="form-select"
+                        aria-label="Default select ageOfDeath"
+                        value={causeOfDeath}
+                        onChange={(e) => setAgeOfDeath(e.target.value)}>
+                            <option selected>Age Of Death</option>
+                            <option value="1">Baby</option>
+                            <option value="2">Toddler</option>
+                            <option value="3">Child</option>
+                            <option value="4">Teen</option>
+                            <option value="5">Young Adult</option>
+                            <option value="6">Adult</option>
+                            <option value="7">Elder</option>
+                    </select>
+                </div>
             </div>
-        </div>
-        <button type="submit" class="btn btn-primary">Create Sim</button>
-    </form>
+            <div class="col-12">
+                <button type="submit" class="btn btn-form-primary">Add sim</button>
+            </div>
+        </form>
+    )
 }
 
 export default SimForm

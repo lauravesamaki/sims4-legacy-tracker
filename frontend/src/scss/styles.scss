@@ -21,21 +21,21 @@
     transform: translateX(-130px);
 }
 
-.btn-login-nav {
+.btn-primary-new {
     background-color: whitesmoke;
     transform: translateX(-25px);
 }
-.btn-login-nav:hover {
+.btn-primary-new:hover {
     background-color: #00db37;
     color: #222222;
 }
 
-.btn-signup-nav {
+.btn-secondary-new {
     background-color: #222222;
     border-color: #00db37;
     color: #00db37;
 }
-.btn-signup-nav:hover {
+.btn-secondary-new:hover {
     background-color: #00db37;
 }
 
@@ -43,9 +43,22 @@
     border: none;
 }
 
-.btn-login, .btn-signup {
+.btn-form-primary, .btn-form-secondary {
     background-color: #00db37;
 }
-.btn-login:hover, .btn-signup:hover {
+.btn-form-primary:hover, .btn-form-secondary:hover {
     background-color: #4df376;
+}
+
+.card {
+    width: 60%;
+    border: 1px thin #222222;
+}
+
+.card-header {
+    background: none;
+}
+
+.flag:hover {
+    cursor: pointer;
 }
