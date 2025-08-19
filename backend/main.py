@@ -42,7 +42,7 @@ def login():
     
     if user and bcrypt.check_password_hash(user.password, password):
         access_token = create_access_token(identity=username)
-        return jsonify({"access_token": access_token}), 200
+        return jsonify({"access_token": access_token, "user": user.username}), 200
     else:
         return jsonify({"message": "User not found"}), 404
 
@@ -53,8 +53,7 @@ def get_user(username):
     if not user:
         return jsonify({"message": "User not found"}), 404
     
-    data = request.json
-    sims = list(data.get("sims"))
+    sims = user.sims
     return jsonify({"sims": sims})
 
 @app.route("/user/<int:user_id>", methods=["PATCH"])
