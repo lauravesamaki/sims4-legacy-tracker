@@ -4,8 +4,12 @@ export default function LayoutUser() {
     const navigate = useNavigate()
     const handleLogout = () => {
         localStorage.clear()
+        sessionStorage.clear()
         navigate('/')
     }
+    
+    const username = sessionStorage.getItem('user')
+
     return <>
         <nav class="navbar navbar-expand-lg nav-bg">
             <div class="container-fluid flex flex-wrap">
@@ -15,7 +19,7 @@ export default function LayoutUser() {
                         <p class="navbar-brand text-white m-2">The Sims 4 Legacy Challenge Tracker</p>
                     </div>
                     <div class="align-content-center">
-                        <button class="btn btn-login-nav" type="button" onClick={handleLogout}>Log Out</button>
+                        <button class="btn btn-primary-new" type="button" onClick={handleLogout}>Log Out</button>
                     </div>
                 </div>
                 <div class="d-flex w-50 justify-content-center link-row">
@@ -39,8 +43,18 @@ export default function LayoutUser() {
                 </div>
             </div>
         </nav>
-
-        <Outlet />
+        <div class="container-fluid">
+            <div class="row align-items-start">
+                <div class="col-1 d-flex justify-content-center flex-wrap">
+                    <Link to={`/user/${sessionStorage.getItem('user')}`} class="w-100 nav-link">Profile</Link>
+                    <Link to="add_sim" class="w-100 nav-link">Sims</Link>
+                    <p class="w-100">Tree</p>
+                </div>
+                <div class="col-11">
+                    <Outlet />
+                </div>
+            </div>
+        </div>
 
         <footer class="text-center text-lg-start footer-bg text-white fixed-bottom">
             <div class="text-center p-4">

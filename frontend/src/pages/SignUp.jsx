@@ -51,7 +51,7 @@ export default function SignUp() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                  />
-                 <button type="submit" class="btn btn-signup">Sign Up</button>
+                 <button type="submit" class="btn btn-form-secondary">Sign Up</button>
             </form>
         </div>
     </>

@@ -1,6 +1,9 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom"
+import LanguageSelector from "../components/LanguageSelector"
+import { useTranslation } from "react-i18next"
 
 export default function Layout() {
+    const {t} = useTranslation()
     return <>
         <nav class="navbar navbar-expand-lg nav-bg">
             <div class="container-fluid flex flex-wrap">
@@ -9,18 +12,19 @@ export default function Layout() {
                         <img src="src/assets/TS4_Logo_Plumbob.jpg.webp" alt="Logo" width="30" />
                         <p class="navbar-brand text-white m-2">The Sims 4 Legacy Challenge Tracker</p>
                     </div>
-                    <div class="align-content-center">
-                        <Link to='login' class="btn btn-login-nav">Log In</Link>
-                        <Link to='signup' class="btn btn-signup-nav">Sign Up</Link>
+                    <div class="d-flex align-items-center">
+                        <Link to='login' class="btn btn-primary-new">{t('Log In')}</Link>
+                        <Link to='signup' class="btn btn-secondary-new">{t('Sign Up')}</Link>
+                        <LanguageSelector />
                     </div>
                 </div>
                 <div class="d-flex w-50 justify-content-center link-row">
                     <ul class="navbar-nav mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <Link to='/' class="nav-link" tabIndex={1}>Home</Link>
+                            <Link to='/' class="nav-link" tabIndex={1}>{t('Home')}</Link>
                         </li>
                         <li class="nav-item">
-                            <Link to='rules' class="nav-link" tabIndex={1}>Rules</Link>
+                            <Link to='rules' class="nav-link" tabIndex={1}>{t('Rules')}</Link>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="/" role="button" data-bs-toggle="dropdown" aria-expanded="false" tabIndex={1}>

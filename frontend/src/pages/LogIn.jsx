@@ -30,7 +30,8 @@ export default function LogIn() {
         } else {
             const data = await response.json()
             localStorage.setItem('token', data.access_token)
-            navigate('/user')
+            sessionStorage.setItem('user', data.user)
+            navigate(`/user/${username}`)
         }
     }
 
@@ -55,7 +56,7 @@ export default function LogIn() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                  />
-                 <button type="submit" class="btn btn-login">Log In</button>
+                 <button type="submit" class="btn btn-form-primary">Log In</button>
             </form>
         </div>
     </>
