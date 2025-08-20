@@ -1,8 +1,10 @@
 import { useState } from "react"
+import { useNavigate } from 'react-router-dom'
 
 export default function SignUp() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const navigate = useNavigate()
 
     const onSubmit = async (e) => {
         e.preventDefault()
@@ -28,6 +30,7 @@ export default function SignUp() {
         } else {
             const data = await response.json()
             console.log(data.message)
+            navigate(`/user/${username}`)
         }
     }
 

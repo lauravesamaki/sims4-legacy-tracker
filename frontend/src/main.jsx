@@ -15,6 +15,7 @@ import PrivateRoutes from './pages/PrivateRoutes'
 import User from './pages/User'
 import LayoutUser from './pages/LayoutUser'
 import AddSim from './pages/AddSim'
+import Sims from './pages/Sims'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -23,8 +24,10 @@ createRoot(document.getElementById('root')).render(
         <Route path='/' element={<LayoutUser />}>
           <Route element={<PrivateRoutes />}>
             <Route path={`/user/${sessionStorage.getItem('user')}`} element={<User />} />
-            <Route path='/add_sim' element={<AddSim />} />
-          </Route></Route>
+            <Route path={`/user/${sessionStorage.getItem('user')}/sims`} element={<Sims />} />
+            <Route path={`/user/${sessionStorage.getItem('user')}/add_sim`} element={<AddSim />} />
+          </Route>
+        </Route>
         <Route path='/' element={<Layout />}>
           <Route index element={<Home />} />
           <Route path='rules' element={<Rules />} />

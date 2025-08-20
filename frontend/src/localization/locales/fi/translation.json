@@ -1,14 +1,20 @@
 {
-    "Log In": "Kirjaudu",
-    "Sign Up": "Rekisteröidy",
-    "Username": "Käyttäjätunnus",
-    "Password": "Salasana",
-    "Firs tName": "Etunimi",
-    "Last Name": "Sukunimi",
-    "Gender": "Sukupuoli",
-    "Professional": "Ammatti",
-    "Cause Of Death": "Kuolinsyy",
-    "Age Of Death": "Kuolinikä",
-    "Home": "Etusivu",
-    "Rules": "Säännöt"
+    "login": "Kirjaudu",
+    "signup": "Rekisteröidy",
+    "username": "Käyttäjätunnus",
+    "password": "Salasana",
+    "firstName": "Etunimi",
+    "lastName": "Sukunimi",
+    "gender": "Sukupuoli",
+    "professional": "Ammatti",
+    "causeOfDeath": "Kuolinsyy",
+    "ageOfDeath": "Kuolinikä",
+    "home": "Etusivu",
+    "rules": "Säännöt",
+    "randomizers": "Generaattorit",
+    "dices": "Nopat",
+    "otherRandomizers": "Muut generaattorit",
+    "addSim": "Lisää Sim",
+
+    "text": "Tervetuloa The Sims 4 Legacy Challenge Trackeriin! Täällä voit tallentaa simejäsi ja heidän sukupuitaan, kerrata haasteen säännöt sekä käyttää erilaisia arpomiskäyttöön tarkoitettuja noppia ja generaattoreita."
 }

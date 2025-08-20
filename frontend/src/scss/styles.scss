@@ -17,8 +17,8 @@
     color: #00db37;
 }
 
-.link-row {
-    transform: translateX(-130px);
+.dropdown-item:hover {
+    color:#00db37;
 }
 
 .btn-primary-new {
@@ -39,7 +39,7 @@
     background-color: #00db37;
 }
 
-.card {
+.card-home {
     border: none;
 }
 
@@ -50,7 +50,7 @@
     background-color: #4df376;
 }
 
-.card {
+.card-add-sim {
     width: 60%;
     border: 1px thin #222222;
 }

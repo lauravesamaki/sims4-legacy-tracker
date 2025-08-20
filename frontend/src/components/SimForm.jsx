@@ -1,17 +1,18 @@
 import { useState } from "react";
 
-const SimForm = ({ }) => {
-    const [firstName, setFirstName] = useState("")
-    const [lastName, setLastName] = useState("")
-    const [gender, setGender] = useState("")
-    const [professional, setProfessional] = useState("")
-    const [causeOfDeath, setCauseOfDeath] = useState("")
-    const [ageOfDeath, setAgeOfDeath] = useState("")
+export default function SimForm({props}) {
+    const [firstName, setFirstName] = useState(props?.firstName || "")
+    const [lastName, setLastName] = useState(props?.lastName || "")
+    const [gender, setGender] = useState(props?.gender || "")
+    const [professional, setProfessional] = useState(props?.professional || "")
+    const [causeOfDeath, setCauseOfDeath] = useState(props?.causeOfDeath || "")
+    const [ageOfDeath, setAgeOfDeath] = useState(props?.ageOfDeath || "")
     const [isDead, setIsDead] = useState(false)
+
+    console.log(props?.path)
 
     const onSubmit = async (e) => {
         e.preventDefault()
-
         const data = {
             firstName,
             lastName,
@@ -21,27 +22,48 @@ const SimForm = ({ }) => {
             ageOfDeath
         }
 
-        const url = "http://127.0.0.1:5000/add_sim"
-        const options = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        }
-        const response = await fetch(url, options)
-        if (response.status !== 201 && response.status !== 200) {
-            const data = await response.json()
-            alert(data.message)
-        }
-        else {
-            alert(data.message)
+        if (props?.path == 'add') {
+            const url = `http://127.0.0.1:5000/user/${sessionStorage.getItem('user')}/add_sim`
+            const options = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            }
+            const response = await fetch(url, options)
+            if (response.status !== 201 && response.status !== 200) {
+                const data = await response.json()
+                alert(data.message)
+            }
+            else {
+                alert(data.message)
+            }
+        } else {
+            const id = props?.id
+            const url = `http://127.0.0.1:5000/sim/${id}`
+            const options = {
+                method: "PATCH",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    "Content-Type": "application/json",
+                    Accept: 'application/json'
+                },
+                body: JSON.stringify(data)
+            }
+            const response = await fetch(url, options)
+            if (response.status !== 201 && response.status !== 200) {
+                const data = await response.json()
+                alert(data.message)
+            }
+            else {
+                alert(data.message)
+            }
         }
     }
 
-    console.log(isDead)
     return (
-        <form class="row g-3" onSubmit={onSubmit()}>
+        <form class="row g-3" onSubmit={onSubmit}>
             <div class="col-md-6">
                 <label for="inputFirstName" class="form-label">First name</label>
                 <input 
@@ -138,5 +160,3 @@ const SimForm = ({ }) => {
         </form>
     )
 }
-
-export default SimForm

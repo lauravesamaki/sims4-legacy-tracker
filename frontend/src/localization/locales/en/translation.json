@@ -1,12 +1,20 @@
 {
-    "Log In": "Log In",
-    "Sign Up": "Sign Up",
-    "Username": "Username",
-    "Password": "Password",
-    "First Name": "First Name",
-    "Last Name": "Last Name",
-    "Gender": "Gender",
-    "Professional": "Professional",
-    "Age Of Death":"Age Of Death",
-    "Cause Of Death": "Cause Of Death"
+    "login": "Log In",
+    "signup": "Sign Up",
+    "username": "Username",
+    "password": "Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "gender": "Gender",
+    "professional": "Professional",
+    "ageOfDeath":"Age Of Death",
+    "causeOfDeath": "Cause Of Death",
+    "home": "Home",
+    "rules": "Rules",
+    "randomizers":"Randomizers",
+    "dices":"Dices",
+    "otherRandomizers":"Other randomizers",
+    "addSim": "Add Sim",
+
+    "text": "Welcome to The Sims 4 Legacy Challenge Tracker! Here you can save your sims and their family trees, read the challenge's rules and use different randomizers for your gameplay."
 }

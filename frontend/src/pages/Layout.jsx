@@ -9,30 +9,30 @@ export default function Layout() {
             <div class="container-fluid flex flex-wrap">
                 <div class="container-fluid d-flex justify-content-between">
                     <div class="d-inline-flex">
-                        <img src="src/assets/TS4_Logo_Plumbob.jpg.webp" alt="Logo" width="30" />
+                        <img src="/src/assets/TS4_Logo_Plumbob.jpg.webp" alt="Logo" width="30" />
                         <p class="navbar-brand text-white m-2">The Sims 4 Legacy Challenge Tracker</p>
                     </div>
                     <div class="d-flex align-items-center">
-                        <Link to='login' class="btn btn-primary-new">{t('Log In')}</Link>
-                        <Link to='signup' class="btn btn-secondary-new">{t('Sign Up')}</Link>
+                        <Link to='login' class="btn btn-primary-new">{t('login')}</Link>
+                        <Link to='signup' class="btn btn-secondary-new">{t('signup')}</Link>
                         <LanguageSelector />
                     </div>
                 </div>
-                <div class="d-flex w-50 justify-content-center link-row">
+                <div>
                     <ul class="navbar-nav mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <Link to='/' class="nav-link" tabIndex={1}>{t('Home')}</Link>
+                            <Link to='/' class="nav-link" tabIndex={1}>{t('home')}</Link>
                         </li>
                         <li class="nav-item">
-                            <Link to='rules' class="nav-link" tabIndex={1}>{t('Rules')}</Link>
+                            <Link to='rules' class="nav-link" tabIndex={1}>{t('rules')}</Link>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="/" role="button" data-bs-toggle="dropdown" aria-expanded="false" tabIndex={1}>
-                                Randomizer
+                                {t('randomizers')}
                             </a>
                             <ul class="dropdown-menu">
-                                <li><Link to="dices" class="dropdown-item">Dices</Link></li>
-                                <li><Link to="randomizers" class="dropdown-item">Randomizers</Link></li>
+                                <li><Link to="dices" class="dropdown-item">{t('dices')}</Link></li>
+                                <li><Link to="randomizers" class="dropdown-item">{t('otherRandomizers')}</Link></li>
                             </ul>
                         </li>
                     </ul>
@@ -42,7 +42,7 @@ export default function Layout() {
 
         <Outlet />
 
-        <footer class="text-center text-lg-start footer-bg text-white fixed-bottom">
+        <footer class="text-center text-lg-start footer-bg text-white position-aboslute bottom-0 start-0">
             <div class="text-center p-4">
                 © 2025 Copyright
             </div>
