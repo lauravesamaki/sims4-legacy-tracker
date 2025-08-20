@@ -46,15 +46,17 @@ def login():
     else:
         return jsonify({"message": "User not found"}), 404
 
-@app.route("/user/<username>", methods=["GET"])
+@app.route("/user/<username>/sims", methods=["GET"])
 def get_user(username):
     user = User.query.filter_by(username=username).first()
 
     if not user:
         return jsonify({"message": "User not found"}), 404
     
-    sims = user.sims
-    return jsonify({"sims": sims})
+    id = user.id
+    sims = Sim.query.filter_by(user_id=id)
+    json_sims = list(map(lambda x: x.to_json(), sims))
+    return jsonify({"sims": json_sims})
 
 @app.route("/user/<int:user_id>", methods=["PATCH"])
 def update_user(user_id):
@@ -87,8 +89,8 @@ def get_sims():
     json_sims = list(map(lambda x: x.to_json(), sims))
     return jsonify({"sims": json_sims})
 
-@app.route("/add_sim", methods=["POST"])
-def add_sim():
+@app.route("/user/<username>/add_sim", methods=["POST"])
+def add_sim(username):
     data = request.json
     first_name = data.get("firstName")
     last_name = data.get("lastName")
@@ -97,14 +99,27 @@ def add_sim():
     age_of_death = data.get("ageOfDeath")
     professional = data.get("professional")
 
+    user = User.query.filter_by(username=username).first()
+
+    if not user:
+        jsonify({"message": "You cannot add sim!"}), 400
+
+    user_id = user.id
+
     if not first_name or not last_name or not gender:
         return (
-            jsonify({"message": "You must include a first name, laste name and gender"}), 
+            jsonify({"message": "You must include a first name, last name and gender"}), 
             400
         )
     
-    new_sim = Sim(first_name=first_name, last_name=last_name, gender=gender, cause_of_death=cause_of_death, age_of_death=age_of_death, professional=professional)
+    new_sim = Sim(first_name=first_name, last_name=last_name, gender=gender, cause_of_death=cause_of_death, age_of_death=age_of_death, professional=professional, user_id=user_id)
     
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+    
+    # add new sim to user's list of sims
+
     try:
         db.session.add(new_sim)
         db.session.commit()
