@@ -95,6 +95,7 @@ def add_sim(username):
     first_name = data.get("firstName")
     last_name = data.get("lastName")
     gender = data.get("gender")
+    occult = data.get("occult")
     cause_of_death = data.get("causeOfDeath")
     age_of_death = data.get("ageOfDeath")
     professional = data.get("professional")
@@ -112,7 +113,7 @@ def add_sim(username):
             400
         )
     
-    new_sim = Sim(first_name=first_name, last_name=last_name, gender=gender, cause_of_death=cause_of_death, age_of_death=age_of_death, professional=professional, user_id=user_id)
+    new_sim = Sim(first_name=first_name, last_name=last_name, gender=gender, occult=occult, cause_of_death=cause_of_death, age_of_death=age_of_death, professional=professional, user_id=user_id)
     
 
     if not user:
@@ -138,6 +139,7 @@ def update_sim(sim_id):
     sim.first_name = data.get("firstName", sim.first_name)
     sim.last_name = data.get("lastName", sim.last_name)
     sim.gender = data.get("gender", sim.gender)
+    sim.occult = data.get("occult", sim.occult)
     sim.cause_of_death = data.get("causeOfDeath", sim.cause_of_death)
     sim.age_of_death = data.get("ageOfDeath", sim.age_of_death)
     sim.professional = data.get("professional", sim.professional)

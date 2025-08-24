@@ -9,6 +9,7 @@ class Sim(db.Model):
     first_name = Column(String(64), nullable=False)
     last_name = Column(String(64), nullable=False)
     gender = Column(String(20), nullable=False)
+    occult = Column(String(20))
     cause_of_death = Column(String(64))
     age_of_death = Column(String(20))
     professional = Column(String(64))
