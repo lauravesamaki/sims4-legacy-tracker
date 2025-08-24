@@ -1,5 +1,6 @@
 {
     "login": "Kirjaudu",
+    "logout": "Kirjaudu ulos",
     "signup": "Rekisteröidy",
     "username": "Käyttäjätunnus",
     "password": "Salasana",
@@ -15,6 +16,8 @@
     "dices": "Nopat",
     "otherRandomizers": "Muut generaattorit",
     "addSim": "Lisää Sim",
+    "sims": "Simit",
+    "profile": "Profiili",
 
     "text": "Tervetuloa The Sims 4 Legacy Challenge Trackeriin! Täällä voit tallentaa simejäsi ja heidän sukupuitaan, kerrata haasteen säännöt sekä käyttää erilaisia arpomiskäyttöön tarkoitettuja noppia ja generaattoreita."
 }

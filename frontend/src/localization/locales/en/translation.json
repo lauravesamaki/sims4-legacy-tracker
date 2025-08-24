@@ -1,5 +1,6 @@
 {
     "login": "Log In",
+    "logout": "Log Out",
     "signup": "Sign Up",
     "username": "Username",
     "password": "Password",
@@ -15,6 +16,9 @@
     "dices":"Dices",
     "otherRandomizers":"Other randomizers",
     "addSim": "Add Sim",
+    "sims": "Sims",
+    "profile": "Profile",
+    
 
     "text": "Welcome to The Sims 4 Legacy Challenge Tracker! Here you can save your sims and their family trees, read the challenge's rules and use different randomizers for your gameplay."
 }
