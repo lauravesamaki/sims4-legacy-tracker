@@ -1,10 +1,13 @@
 import { useState } from "react"
 import { useNavigate } from 'react-router-dom'
+import { StyledButton } from "../components/Theme"
+import { useTranslation } from "react-i18next"
 
 export default function LogIn() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const navigate = useNavigate()
+    const { t } = useTranslation()
 
     const onSubmit = async (e) => {
         e.preventDefault()
@@ -29,16 +32,16 @@ export default function LogIn() {
             alert(data.message)
         } else {
             const data = await response.json()
-            localStorage.setItem('token', data.access_token)
+            sessionStorage.setItem('token', data.access_token)
             sessionStorage.setItem('user', data.user)
-            navigate(`/user/${username}`)
+            navigate(`/user/${data.user}`)
         }
     }
 
     return <>
         <div class="container-fluid d-flex justify-content-center">
             <form class="mb-3 mt-3" onSubmit={onSubmit}>
-                <h4 class="mb-3">Log In</h4>
+                <h4 class="mb-3">{t("login")}</h4>
                 <input
                     type="text"
                     class="form-control mb-3"
@@ -56,7 +59,7 @@ export default function LogIn() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                  />
-                 <button type="submit" class="btn btn-form-primary">Log In</button>
+                 <StyledButton type="submit">{t('login')}</StyledButton>
             </form>
         </div>
     </>

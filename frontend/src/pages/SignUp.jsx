@@ -1,10 +1,13 @@
 import { useState } from "react"
 import { useNavigate } from 'react-router-dom'
+import { StyledButton } from "../components/Theme"
+import { useTranslation } from "react-i18next"
 
 export default function SignUp() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const navigate = useNavigate()
+    const { t } = useTranslation()
 
     const onSubmit = async (e) => {
         e.preventDefault()
@@ -29,7 +32,8 @@ export default function SignUp() {
             alert(data.message)
         } else {
             const data = await response.json()
-            console.log(data.message)
+            sessionStorage.setItem("token", data.access_token)
+            sessionStorage.setItem("user", data.user)
             navigate(`/user/${username}`)
         }
     }
@@ -37,12 +41,12 @@ export default function SignUp() {
     return <>
         <div class="container-fluid d-flex justify-content-center">
             <form class="mb-3 mt-3" onSubmit={onSubmit}>
-                <h4 class="mb-3">Sign Up</h4>
+                <h4 class="mb-3">{t("signup")}</h4>
                 <input 
                     type="text"
                     class="form-control mb-3"
                     id="username"
-                    placeholder="Username"
+                    placeholder={t("username")}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
@@ -50,11 +54,11 @@ export default function SignUp() {
                     type="password"
                     class="form-control mb-3"
                     id="password"
-                    placeholder="Password"
+                    placeholder={t("password")}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                  />
-                 <button type="submit" class="btn btn-form-secondary">Sign Up</button>
+                 <StyledButton>{t('signup')}</StyledButton>
             </form>
         </div>
     </>
