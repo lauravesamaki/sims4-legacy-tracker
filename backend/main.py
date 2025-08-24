@@ -25,7 +25,8 @@ def signup():
     try:
         db.session.add(new_user)
         db.session.commit()
-        return jsonify({"message": "New user has been added!"}), 201
+        access_token = create_access_token(identity=username)
+        return jsonify({"message": "New user has been added!", "access_token": access_token, "user": new_user.username}), 201
     except Exception as e:
         return jsonify({"message": str(e)}), 400
     
