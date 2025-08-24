@@ -1,58 +1,96 @@
 @import "bootstrap/scss/bootstrap";
 
+//Theme colors
+$primary: #0f0f0f;
+$secondary: #1CD836;
+$blue: #45CFFE;
+$white: #FBFDFB;
+$peach: #FFD1D1;
+$lavender: #DAB7FF;
+$red:#FE3958;
+$red-200: #FF7E85;
+
+body {
+    background-color: $white;
+}
+
 .nav-bg, .footer-bg {
-    background-color: #222222;
+    background-color: $primary;
 }
 
 .navbar-nav .nav-link {
-    color:white;
+    color:$white;
 }
 .nav-link:hover {
-    color: #00db37;
+    color: $secondary;
 }
 .nav-link:active {
-    color: #00db37;
+    color: $secondary;
 }
 .nav-link[tabindex]:focus {
-    color: #00db37;
+    color: $secondary;
 }
 
 .dropdown-item:hover {
-    color:#00db37;
+    color:$secondary;
 }
 
 .btn-primary-new {
-    background-color: whitesmoke;
-    transform: translateX(-25px);
+    background-color: $white;
 }
+
 .btn-primary-new:hover {
-    background-color: #00db37;
-    color: #222222;
+    background-color: $secondary;
+    color: $primary;
 }
 
 .btn-secondary-new {
-    background-color: #222222;
-    border-color: #00db37;
-    color: #00db37;
+    background-color: $primary;
+    border-color: $secondary;
+    color: $secondary;
 }
 .btn-secondary-new:hover {
-    background-color: #00db37;
+    background-color: $secondary;
 }
 
 .card-home {
     border: none;
+    background-color: $white;
+    width: 60%;
+}
+
+.card-home .card-text {
+    width: 70%;
+    margin: 0 auto;
 }
 
 .btn-form-primary, .btn-form-secondary {
-    background-color: #00db37;
+    background-color: $secondary;
 }
 .btn-form-primary:hover, .btn-form-secondary:hover {
     background-color: #4df376;
+    color: $primary;
+}
+
+.btn-delete {
+    color: $red;
+}
+
+.btn-delete:hover {
+    color: $red-200;
+}
+
+.btn-edit {
+    color:$primary;
+}
+
+.btn-edit:hover {
+    color:$secondary;
 }
 
 .card-add-sim {
     width: 60%;
-    border: 1px thin #222222;
+    border: 1px thin $primary;
 }
 
 .card-header {
@@ -61,4 +99,14 @@
 
 .flag:hover {
     cursor: pointer;
+}
+
+.sidebar {
+    background-color: $primary;
+    color: $white;
+}
+
+.custom-tooltip {
+  --bs-tooltip-bg: $blue;
+  --bs-tooltip-color: $primary;
 }

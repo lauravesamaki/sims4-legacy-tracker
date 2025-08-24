@@ -1,51 +1,57 @@
 import { Outlet, Link } from "react-router-dom"
 import LanguageSelector from "../components/LanguageSelector"
 import { useTranslation } from "react-i18next"
+import { StyledButton } from "../components/Theme"
 
 export default function Layout() {
     const {t} = useTranslation()
-    return <>
-        <nav class="navbar navbar-expand-lg nav-bg">
-            <div class="container-fluid flex flex-wrap">
-                <div class="container-fluid d-flex justify-content-between">
-                    <div class="d-inline-flex">
-                        <img src="/src/assets/TS4_Logo_Plumbob.jpg.webp" alt="Logo" width="30" />
-                        <p class="navbar-brand text-white m-2">The Sims 4 Legacy Challenge Tracker</p>
+    //
+    return (
+        <div class="d-flex flex-column min-vh-100">
+            <nav class="navbar navbar-expand-lg nav-bg">
+                <div class="container-fluid flex flex-wrap">
+                    <div class="container-fluid d-flex justify-content-between">
+                        <div class="d-inline-flex">
+                            <img src="/src/assets/TS4_Logo_Plumbob.jpg.webp" alt="Logo" width="30" />
+                            <p class="navbar-brand text-white m-2">The Sims 4 Legacy Challenge Tracker</p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <StyledButton primary component={Link} to="/login">{t('login')}</StyledButton>
+                            <StyledButton secondary component={Link} to="/signup">{t('signup')}</StyledButton>
+                            <LanguageSelector />
+                        </div>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <Link to='login' class="btn btn-primary-new">{t('login')}</Link>
-                        <Link to='signup' class="btn btn-secondary-new">{t('signup')}</Link>
-                        <LanguageSelector />
+                    <div>
+                        <ul class="navbar-nav mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <Link to='/' class="nav-link" tabIndex={1}>{t('home')}</Link>
+                            </li>
+                            <li class="nav-item">
+                                <Link to='rules' class="nav-link" tabIndex={1}>{t('rules')}</Link>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="/" role="button" data-bs-toggle="dropdown" aria-expanded="false" tabIndex={1}>
+                                    {t('randomizers')}
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><Link to="dices" class="dropdown-item">{t('dices')}</Link></li>
+                                    <li><Link to="randomizers" class="dropdown-item">{t('otherRandomizers')}</Link></li>
+                                </ul>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <div>
-                    <ul class="navbar-nav mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <Link to='/' class="nav-link" tabIndex={1}>{t('home')}</Link>
-                        </li>
-                        <li class="nav-item">
-                            <Link to='rules' class="nav-link" tabIndex={1}>{t('rules')}</Link>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="/" role="button" data-bs-toggle="dropdown" aria-expanded="false" tabIndex={1}>
-                                {t('randomizers')}
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><Link to="dices" class="dropdown-item">{t('dices')}</Link></li>
-                                <li><Link to="randomizers" class="dropdown-item">{t('otherRandomizers')}</Link></li>
-                            </ul>
-                        </li>
-                    </ul>
+            </nav>
+
+            <div claas="flex-grow-1">
+                <Outlet />
+            </div>
+
+            <footer class="text-center text-lg-start footer-bg text-white mt-auto">
+                <div class="text-center p-4">
+                    © 2025 Copyright
                 </div>
-            </div>
-        </nav>
-
-        <Outlet />
-
-        <footer class="text-center text-lg-start footer-bg text-white position-aboslute bottom-0 start-0">
-            <div class="text-center p-4">
-                © 2025 Copyright
-            </div>
-        </footer>
-    </>
+            </footer>
+        </div>
+    )
 }
