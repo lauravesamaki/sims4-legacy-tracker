@@ -9,12 +9,24 @@ class Sim(db.Model):
     first_name = Column(String(64), nullable=False)
     last_name = Column(String(64), nullable=False)
     gender = Column(String(20), nullable=False)
-    occult = Column(String(20))
+    occult = Column(Integer)
     cause_of_death = Column(String(64))
     age_of_death = Column(String(20))
-    professional = Column(String(64))
+    occupation = Column(String(64))
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     user = relationship("User", back_populates="sims")
+
+    OCCULT_MAP = {
+        1: "human",
+        2: "alien",
+        3: "fairy",
+        4: "ghost",
+        5: "merfolk",
+        6: "servo",
+        7: "spellcaster",
+        8: "vampire",
+        9: "werewolf"
+    }
 
     def to_json(self):
         return {
@@ -22,9 +34,10 @@ class Sim(db.Model):
             "firstName": self.first_name,
             "lastName": self.last_name,
             "gender": self.gender,
+            "occult": {"name": self.OCCULT_MAP.get(self.occult, "unknown"), "num": self.occult},
             "causeOfDeath": self.cause_of_death,
             "ageOfDeath": self.age_of_death,
-            "professional": self.professional,
+            "occupation": self.occupation,
             "userId": self.user_id
         }
     

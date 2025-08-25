@@ -3,6 +3,7 @@ from config import app, db
 from models import Sim, Relationship, User
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token
+from sqlalchemy import select
 
 bcrypt = Bcrypt(app)
 
@@ -39,7 +40,7 @@ def login():
     if not username or not password:
         return jsonify({"message": "Missing username or password"}), 400
 
-    user = User.query.filter_by(username=username).first()
+    user = db.session.scalars(select(User).where(User.username == username)).first()
     
     if user and bcrypt.check_password_hash(user.password, password):
         access_token = create_access_token(identity=username)
@@ -49,20 +50,23 @@ def login():
 
 @app.route("/user/<username>/sims", methods=["GET"])
 def get_user(username):
-    user = User.query.filter_by(username=username).first()
+    user = db.session.scalars(select(User).where(User.username == username)).first()
+    #User.query.filter_by(username=username).first()
 
     if not user:
         return jsonify({"message": "User not found"}), 404
     
     id = user.id
-    sims = Sim.query.filter_by(user_id=id)
+    sims = db.session.scalars(select(Sim).where(Sim.user_id == id))
+    #Sim.query.filter_by(user_id=id)
     json_sims = list(map(lambda x: x.to_json(), sims))
     return jsonify({"sims": json_sims})
 
 @app.route("/user/<int:user_id>", methods=["PATCH"])
 def update_user(user_id):
     bcrypt = Bcrypt(app)
-    user = User.query.get(user_id)
+    user = db.session.scalars(select(User).where(User.id == user_id)).first()
+    #User.query.get(user_id)
 
     if not user:
         return jsonify({"message": "User not found"}), 404
@@ -86,7 +90,7 @@ def update_user(user_id):
 # Sim routes
 @app.route("/sims", methods=["GET"])
 def get_sims():
-    sims = Sim.query.all()
+    sims = db.session.scalars(select(Sim))
     json_sims = list(map(lambda x: x.to_json(), sims))
     return jsonify({"sims": json_sims})
 
@@ -99,9 +103,13 @@ def add_sim(username):
     occult = data.get("occult")
     cause_of_death = data.get("causeOfDeath")
     age_of_death = data.get("ageOfDeath")
-    professional = data.get("professional")
+    occupation = data.get("occupation")
 
-    user = User.query.filter_by(username=username).first()
+    if occult == "":
+        occult = 1
+
+    user = db.session.scalars(select(User).where(User.username == username)).first()
+
 
     if not user:
         jsonify({"message": "You cannot add sim!"}), 400
@@ -114,7 +122,7 @@ def add_sim(username):
             400
         )
     
-    new_sim = Sim(first_name=first_name, last_name=last_name, gender=gender, occult=occult, cause_of_death=cause_of_death, age_of_death=age_of_death, professional=professional, user_id=user_id)
+    new_sim = Sim(first_name=first_name, last_name=last_name, gender=gender, occult=occult, cause_of_death=cause_of_death, age_of_death=age_of_death, occupation=occupation, user_id=user_id)
     
 
     if not user:
@@ -131,7 +139,8 @@ def add_sim(username):
 
 @app.route("/sim/<int:sim_id>", methods=["PATCH"])
 def update_sim(sim_id):
-    sim = Sim.query.get(sim_id)
+    sim = db.session.scalars(select(Sim).where(Sim.id == sim_id)).first()
+    #Sim.query.get(sim_id)
 
     if not sim:
         return jsonify({"message": "Sim not found"}), 404
@@ -143,7 +152,7 @@ def update_sim(sim_id):
     sim.occult = data.get("occult", sim.occult)
     sim.cause_of_death = data.get("causeOfDeath", sim.cause_of_death)
     sim.age_of_death = data.get("ageOfDeath", sim.age_of_death)
-    sim.professional = data.get("professional", sim.professional)
+    sim.occupation = data.get("occupation", sim.occupation)
 
     db.session.commit()
 
@@ -151,7 +160,8 @@ def update_sim(sim_id):
 
 @app.route("/sim/<int:sim_id>", methods=["DELETE"])
 def delete_sim(sim_id):
-    sim = Sim.query.get(sim_id)
+    sim = db.session.scalars(select(Sim).where(Sim.id == sim_id)).first()
+    #Sim.query.get(sim_id)
 
     if not sim:
         return jsonify({"message": "Sim not found"}), 404
@@ -164,7 +174,8 @@ def delete_sim(sim_id):
 # Relationship routes
 @app.route("/sim/<int:sim_id>/relationships", methods=["POST"])
 def add_relationship(sim_id):
-    sim = Sim.query.get(sim_id)
+    sim = db.session.scalars(select(Sim).where(Sim.id == sim_id)).first()
+    #Sim.query.get(sim_id)
 
     if not sim:
         return jsonify({"message": "Sim not found"}), 404
