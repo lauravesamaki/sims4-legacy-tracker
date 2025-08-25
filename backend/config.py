@@ -17,7 +17,10 @@ pgdb = os.getenv("PGDATABASE")
 jwt_secret_key = os.getenv("JWT_SECRET_KEY")
 
 app = Flask(__name__)
-CORS(app)
+CORS(
+    app,
+    origins=["http://localhost:5173"]
+)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{username}:{password}@{host}:{port}/{pgdb}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
