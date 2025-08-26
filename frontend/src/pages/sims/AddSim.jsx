@@ -1,4 +1,4 @@
-import SimForm from "../components/SimForm"
+import SimForm from "../../components/SimForm"
 
 export default function AddSim() {
     return (
