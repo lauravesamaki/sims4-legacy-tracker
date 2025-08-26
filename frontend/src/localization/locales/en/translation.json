@@ -4,12 +4,39 @@
     "signup": "Sign Up",
     "username": "Username",
     "password": "Password",
+
+
     "firstName": "First Name",
     "lastName": "Last Name",
     "gender": "Gender",
-    "professional": "Professional",
+    "female": "Female",
+    "male": "Male",
+    "other": "Other",
+    "occupation": "Occupation",
+    "occult": "Occult",
+    "human": "Human",
+    "alien": "Alien",
+    "vampire": "Vampire",
+    "werewolf": "Werewolf",
+    "fairy": "Fairy",
+    "spellcaster": "Spellcaster",
+    "merfolk": "Merfolk",
+    "servo": "Servo",
+    "ghost": "Ghost",
     "ageOfDeath":"Age Of Death",
     "causeOfDeath": "Cause Of Death",
+    "hasTheSimDied": "Has the sim died?",
+    "causePlaceholder": "Old age, fire etc.",
+    "newborn": "Newborn",
+    "infant": "Infant",
+    "toddler": "Toddler",
+    "child": "Child",
+    "teen": "Teen",
+    "youngAdult": "Young adult",
+    "adult": "Adult",
+    "elder": "Elder",
+
+
     "home": "Home",
     "rules": "Rules",
     "randomizers":"Randomizers",
@@ -18,7 +45,13 @@
     "addSim": "Add Sim",
     "sims": "Sims",
     "profile": "Profile",
-    
+    "familyTrees": "Family Trees",
+    "familyTree": "Family Tree",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "createNewTree": "Create new tree",
+
 
     "text": "Welcome to The Sims 4 Legacy Challenge Tracker! Here you can save your sims and their family trees, read the challenge's rules and use different randomizers for your gameplay."
 }
