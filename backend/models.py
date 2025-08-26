@@ -13,8 +13,23 @@ class Sim(db.Model):
     cause_of_death = Column(String(64))
     age_of_death = Column(String(20))
     occupation = Column(String(64))
+    relationships = relationship(
+        "Relationship", 
+        foreign_keys="[Relationship.sim_id]",
+        back_populates="sim",
+        cascade="all, delete-orphan"
+    )
+
+    related_to = relationship(
+        "Relationship",
+        foreign_keys="[Relationship.related_sim_id]",
+        back_populates="related_to",
+        cascade="all, delete-orphan"
+    )
+
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     user = relationship("User", back_populates="sims")
+
 
     OCCULT_MAP = {
         1: "human",
@@ -34,10 +49,15 @@ class Sim(db.Model):
             "firstName": self.first_name,
             "lastName": self.last_name,
             "gender": self.gender,
-            "occult": {"name": self.OCCULT_MAP.get(self.occult, "unknown"), "num": self.occult},
+            "occult": {
+                "name": self.OCCULT_MAP.get(self.occult, "unknown"), 
+                "num": self.occult
+            },
             "causeOfDeath": self.cause_of_death,
             "ageOfDeath": self.age_of_death,
             "occupation": self.occupation,
+            "relationships": [r.id for r in self.relationships],
+            "relatedTo": [r.id for r in self.related_to],
             "userId": self.user_id
         }
     
@@ -47,6 +67,9 @@ class Relationship(db.Model):
     sim_id = Column(Integer, ForeignKey("sims.id"), nullable=False)
     related_sim_id = Column(Integer, ForeignKey("sims.id"), nullable=False)
     relationship_type = Column(String(64), nullable=False)
+
+    sim = relationship("Sim", foreign_keys=[sim_id], back_populates="relationships")
+    related_sim = relationship("Sim", foreign_keys=[related_sim_id], back_populates="related_to")
 
     def to_json(self):
         return {

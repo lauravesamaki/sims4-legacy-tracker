@@ -172,6 +172,19 @@ def delete_sim(sim_id):
     return jsonify({"message": "Sim deleted!"}), 200
 
 # Relationship routes
+RELATIONSHIP_MAP = {
+    "parent": "child",
+    "child": "parent",
+    "spouse": "spouse",
+    "sibling" :"sibling",
+    "uncle": "niece/nephew",
+    "aunt": "niece/nephew",
+    "niece": "uncle/aunt",
+    "nephew": "uncle/aunt",
+    "grandparent": "grandchild",
+    "grandchild": "grandparent"
+}
+
 @app.route("/sim/<int:sim_id>/relationships", methods=["POST"])
 def add_relationship(sim_id):
     sim = db.session.scalars(select(Sim).where(Sim.id == sim_id)).first()
@@ -186,16 +199,62 @@ def add_relationship(sim_id):
     related_to_id = data.get("relatedToId")
     relationship_type = data.get("relationshipType")
 
+    inverse_type = RELATIONSHIP_MAP.get(relationship_type)
+
     if not related_to_id:
         return jsonify({"message": "You must add both sims' id to relationship"}), 400
     
-    new_relationship = Relationship(sim_id=sim_id, related_to_id=related_to_id, relationship_type=relationship_type)
+    existing = db.session.scalars(select(Relationship).where(Relationship.sim_id == sim_id & Relationship.related_to_id == related_to_id & Relationship.relationship_type == relationship_type)).first()
+    
+    if existing:
+        return existing
+
+    r1 = Relationship(sim_id=sim_id, related_sim_id=related_to_id, relationship_type=relationship_type)
+    r2 = Relationship(sim_id=related_to_id, related_sim_id=sim_id, relationship_type=inverse_type)
+    
     try:
-        db.session.add(new_relationship)
+        db.session.add_all([r1, r2])
         db.session.commit()    
         return jsonify({"message": "New relationship to sim has been added!"}), 201
     except Exception as e:
         return jsonify({"message": str(e)}), 400
+    
+@app.route("/tree/<int:relationship_id>", methods=["DELETE"])
+def delete_relationship(relationship_id):
+    relationship = db.session.scalars(select(Relationship).where(Relationship.id == relationship_id)).first()
+
+    if not relationship:
+        return jsonify({"message": "Relationship not found"}), 404
+    
+    relationship2 = db.session.scalars(select(Relationship).where(
+        Relationship.sim_id == relationship.related_sim_id &
+        Relationship.related_sim_id == relationship.sim_id
+    ))
+
+    if not relationship2:
+        return jsonify({"message": "Couldn't find matching relationship"}), 404
+    
+    db.session.delete(relationship)
+    db.session.delete(relationship2)
+    db.session.commit()
+
+    return jsonify({"message": "Relationships succesfully deleted!"}), 200
+
+@app.route("/tree/<int:relationship_id>", methods=["PATCH"])
+def edit_relationship(relationship_id):
+    relationship = db.session.scalars(select(Relationship).where(Relationship.id == relationship_id)).first()
+
+    if not relationship:
+        return jsonify({"message": "Relationship not found"}), 404
+    
+    data = request.json
+    relationship.sim_id = data.get("sim_id", relationship.sim_id)
+    relationship.related_sim_id = data.get("related_sim_id", relationship.related_sim_id)
+    relationship.relationship_type = data.get("relationship_type", relationship.relationship_type)
+
+    db.session.commit()
+
+    return jsonify({"message": "Relationship updated"}), 200
 
 if __name__ == "__main__":
     with app.app_context():
