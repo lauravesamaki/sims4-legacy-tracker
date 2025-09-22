@@ -1,8 +1,18 @@
-from flask import request, jsonify
-from config import app, db
+from flask import request, jsonify, make_response, redirect
+from config import app, db, jwt
 from models import Sim, Relationship, User
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    get_jwt_identity,
+    get_jwt,
+    jwt_required,
+    set_access_cookies,
+    set_refresh_cookies,
+    unset_jwt_cookies,
+    unset_access_cookies,
+    get_csrf_token)
 from sqlalchemy import select
 
 bcrypt = Bcrypt(app)
@@ -26,8 +36,9 @@ def signup():
     try:
         db.session.add(new_user)
         db.session.commit()
-        access_token = create_access_token(identity=username)
-        return jsonify({"message": "New user has been added!", "access_token": access_token, "user": new_user.username}), 201
+        access_token = create_access_token(identity=str(new_user.id),fresh=True)
+        refresh_token = create_refresh_token(new_user.id)
+        return jsonify({"message": "New user has been added!", "access_token": access_token, "refresh_tone": refresh_token}), 201
     except Exception as e:
         return jsonify({"message": str(e)}), 400
     
@@ -43,12 +54,55 @@ def login():
     user = db.session.scalars(select(User).where(User.username == username)).first()
     
     if user and bcrypt.check_password_hash(user.password, password):
-        access_token = create_access_token(identity=username)
-        return jsonify({"access_token": access_token, "user": user.username}), 200
+        access_token = create_access_token(identity=str(user.id), fresh=True)
+        refresh_token = create_refresh_token(user.id)
+
+        res = jsonify({'login': True, 'user': username})
+        res.headers['csrf_access_token'] = get_csrf_token(access_token)
+        res.headers['csrf_refresh_token'] = get_csrf_token(refresh_token)
+        set_access_cookies(res, access_token)
+        set_refresh_cookies(res, refresh_token)
+        #return jsonify({"access_token": access_token, "refresh_tone": refresh_token}), 200
+        return res, 200
     else:
         return jsonify({"message": "User not found"}), 404
+    
+@app.route("/refresh", methods=["GET"])
+@jwt_required(refresh=True, locations=["cookies"])
+def refresh():
+    current_user = get_jwt_identity()
+    new_token = create_access_token(identity=str(current_user))
+    res = make_response(redirect(app.config['BASE_URL'] + '/', 302))
+    set_access_cookies(res, new_token)
+    return res
+
+@jwt.expired_token_loader
+def expired_token_callback(callback):
+    res = make_response(redirect(app.config['BASE_URL'] + '/refresh'))
+    unset_access_cookies(res)
+    return res, 302
+
+@app.route("/token/remove", methods=["POST"])
+def logout():
+    res = jsonify({"logout": True})
+    unset_jwt_cookies(res)
+    return res, 200
+
+@app.route("/auth-check", methods=["GET"])
+@jwt_required(locations=["cookies"])
+def auth_check():
+    user_id = get_jwt_identity()
+    return jsonify({"logged_id": True, "user": user_id}), 200
+
+@app.route("/csrf-token", methods=["GET"])
+@jwt_required(locations=["cookies"])
+def get_csrf():
+    token = get_jwt()
+    csrf = token["csrf"]
+    return jsonify({"token": csrf})
 
 @app.route("/user/<username>/sims", methods=["GET"])
+@jwt_required(fresh=True, locations=["cookies"])
 def get_user(username):
     user = db.session.scalars(select(User).where(User.username == username)).first()
     #User.query.filter_by(username=username).first()
@@ -63,6 +117,7 @@ def get_user(username):
     return jsonify({"sims": json_sims})
 
 @app.route("/user/<int:user_id>", methods=["PATCH"])
+@jwt_required(fresh=True, locations=["cookies"])
 def update_user(user_id):
     bcrypt = Bcrypt(app)
     user = db.session.scalars(select(User).where(User.id == user_id)).first()
@@ -88,15 +143,18 @@ def update_user(user_id):
     return jsonify({"message": "User succesfully updated"}), 200
 
 # Sim routes
-@app.route("/sims", methods=["GET"])
-def get_sims():
-    sims = db.session.scalars(select(Sim))
+@app.route("/user/<username>/sims", methods=["GET"])
+@jwt_required(fresh=True, locations=["cookies"])
+def get_sims(username):
+    user = db.session.scalars(select(User).where(User.username == username)).first()
+    sims = db.session.scalars(select(Sim).where(Sim.user_id == user.id))
     json_sims = list(map(lambda x: x.to_json(), sims))
     return jsonify({"sims": json_sims})
 
 @app.route("/user/<username>/add_sim", methods=["POST"])
+@jwt_required(fresh=True, locations=["cookies"])
 def add_sim(username):
-    data = request.json
+    data = request.get_json()
     first_name = data.get("firstName")
     last_name = data.get("lastName")
     gender = data.get("gender")
@@ -133,11 +191,13 @@ def add_sim(username):
     try:
         db.session.add(new_sim)
         db.session.commit()
-        return jsonify({"message": "New sim has been added!"}), 201
+        sim = new_sim.to_json()
+        return jsonify({"message": "New sim has been added!", "sim": sim}), 201
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
 @app.route("/sim/<int:sim_id>", methods=["PATCH"])
+@jwt_required(fresh=True, locations=["cookies"])
 def update_sim(sim_id):
     sim = db.session.scalars(select(Sim).where(Sim.id == sim_id)).first()
     #Sim.query.get(sim_id)
@@ -159,6 +219,7 @@ def update_sim(sim_id):
     return jsonify({"message": "Sim updated"}), 200
 
 @app.route("/sim/<int:sim_id>", methods=["DELETE"])
+@jwt_required(fresh=True, locations=["cookies"])
 def delete_sim(sim_id):
     sim = db.session.scalars(select(Sim).where(Sim.id == sim_id)).first()
     #Sim.query.get(sim_id)
@@ -186,6 +247,7 @@ RELATIONSHIP_MAP = {
 }
 
 @app.route("/sim/<int:sim_id>/relationships", methods=["POST"])
+@jwt_required(fresh=True, locations=["cookies"])
 def add_relationship(sim_id):
     sim = db.session.scalars(select(Sim).where(Sim.id == sim_id)).first()
     #Sim.query.get(sim_id)
@@ -220,6 +282,7 @@ def add_relationship(sim_id):
         return jsonify({"message": str(e)}), 400
     
 @app.route("/tree/<int:relationship_id>", methods=["DELETE"])
+@jwt_required(fresh=True, locations=["cookies"])
 def delete_relationship(relationship_id):
     relationship = db.session.scalars(select(Relationship).where(Relationship.id == relationship_id)).first()
 
@@ -241,6 +304,7 @@ def delete_relationship(relationship_id):
     return jsonify({"message": "Relationships succesfully deleted!"}), 200
 
 @app.route("/tree/<int:relationship_id>", methods=["PATCH"])
+@jwt_required(fresh=True, locations=["cookies"])
 def edit_relationship(relationship_id):
     relationship = db.session.scalars(select(Relationship).where(Relationship.id == relationship_id)).first()
 

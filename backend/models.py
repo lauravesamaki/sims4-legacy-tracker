@@ -69,7 +69,7 @@ class Relationship(db.Model):
     relationship_type = Column(String(64), nullable=False)
 
     sim = relationship("Sim", foreign_keys=[sim_id], back_populates="relationships")
-    related_sim = relationship("Sim", foreign_keys=[related_sim_id], back_populates="related_to")
+    related_to = relationship("Sim", foreign_keys=[related_sim_id], back_populates="related_to")
 
     def to_json(self):
         return {
