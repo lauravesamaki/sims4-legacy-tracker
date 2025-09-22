@@ -1,17 +1,21 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import LanguageSelector from "../components/LanguageSelector"
 import { useTranslation } from "react-i18next"
-import { StyledButton } from "../components/Theme";
+import { Button } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser, selectUser } from "../services/userSlice";
 
 export default function LayoutUser() {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+
     const handleLogout = () => {
-        localStorage.clear()
         sessionStorage.clear()
+        dispatch(logoutUser())
         navigate('/')
     }
     
-    const username = sessionStorage.getItem('user')
+    const username = sessionStorage.getItem("user")
     const {t} = useTranslation()
 
     return (
@@ -24,7 +28,21 @@ export default function LayoutUser() {
                             <p class="navbar-brand text-white m-2">The Sims 4 Legacy Challenge Tracker</p>
                         </div>
                         <div class="d-flex align-items-center">
-                            <StyledButton type="button" onClick={handleLogout} primary>{t("logout")}</StyledButton>
+                            <Button 
+                                type="button" 
+                                onClick={handleLogout} 
+                                sx={{
+                                    color: "black.main",
+                                    bgcolor: "white.main",
+                                    border: "1px solid white.main",
+                                    "&:hover": {
+                                        color: "black.main",
+                                        bgcolor: "primary.main",
+                                        border: "1px solid black.main"
+                                    }
+                                }}>
+                                    {t("logout")}
+                            </Button>
                             <LanguageSelector />
                         </div>
                     </div>
@@ -53,7 +71,7 @@ export default function LayoutUser() {
                 <div class="col-1 sidebar">
                     <Link to={`/user/${username}`} class="w-100 nav-link">{t("profile")}</Link>
                     <Link to={`/user/${username}/sims`} class="w-100 nav-link">{t("sims")}</Link>
-                    <p class="w-100">Tree</p>
+                    <Link to={`/user/${username}/trees`} class="w-100 nav-link">{t("familyTrees")}</Link>
                 </div>
                 <div class="col-11">
                     <Outlet />

@@ -1,13 +1,15 @@
 import { useState } from "react"
 import { useNavigate } from 'react-router-dom'
-import { StyledButton } from "../components/Theme"
+import { Button } from "@mui/material"
 import { useTranslation } from "react-i18next"
+import { useDispatch } from "react-redux"
 
 export default function SignUp() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const navigate = useNavigate()
     const { t } = useTranslation()
+    const dispatch = useDispatch()
 
     const onSubmit = async (e) => {
         e.preventDefault()
@@ -33,7 +35,8 @@ export default function SignUp() {
         } else {
             const data = await response.json()
             sessionStorage.setItem("token", data.access_token)
-            sessionStorage.setItem("user", data.user)
+            const username = data.user
+            dispatch(loginUser(username))
             navigate(`/user/${username}`)
         }
     }
@@ -50,15 +53,31 @@ export default function SignUp() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
-                 <input
-                    type="password"
-                    class="form-control mb-3"
-                    id="password"
-                    placeholder={t("password")}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                 />
-                 <StyledButton>{t('signup')}</StyledButton>
+                <input
+                type="password"
+                class="form-control mb-3"
+                id="password"
+                placeholder={t("password")}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                />
+                <Button
+                    sx={{
+                        color: "primary.main",
+                        bgcolor: "black.main",
+                        border: 1,
+                        borderColor: "primary.main",
+                        borderStyle: "solid",
+                        "&:hover": {
+                            color: "black.main",
+                            bgcolor: "primary.main",
+                            border: 1,
+                            borderColor: "black.main",
+                            borderStyle: "solid",
+                        }
+                    }}>
+                    {t('signup')}
+                </Button>
             </form>
         </div>
     </>

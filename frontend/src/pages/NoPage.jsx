@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { StyledButton } from "../components/Theme"
+import { Button } from "@mui/material"
 
 export default function NoPage() {
     return (
@@ -267,7 +267,25 @@ export default function NoPage() {
                 How you got here is a mystery. But you can click the button below
                 to go back to the homepage.
                 </p>
-                <StyledButton component={Link} to="/">Home</StyledButton>
+                <Button 
+                    sx={{
+                        color: "primary.main",
+                        bgcolor: "black.main",
+                        border: 1,
+                        borderColor: "primary.main",
+                        borderStyle: "solid",
+                        "&:hover": {
+                            color: "black.main",
+                            bgcolor: "primary.main",
+                            border: 1,
+                            borderColor: "black.main",
+                            borderStyle: "solid",
+                        }
+                    }}
+                    component={Link} 
+                    to="/">
+                        Home
+                </Button>
             </div>
             </div>
         </div>

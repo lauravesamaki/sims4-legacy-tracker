@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next"
 import { GB, FI } from 'country-flag-icons/react/3x2'
 import { IconButton, Menu, MenuItem, ListItemText, ListItemIcon } from '@mui/material'
 import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined';
-import { StyledIconButton } from './Theme';
 
 export default function LanguageSelector() {    
     const [anchor, setAnchor] = useState(null)
@@ -38,15 +37,20 @@ export default function LanguageSelector() {
     const { t, i18n } = useTranslation()
 
     return <>
-        <StyledIconButton
-            white
+        <IconButton
+            sx={{
+                color: "white.main",
+                "&:hover": {
+                    color: "primary.main"
+                }
+            }}
             aria-label="lngSelect"
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick}>
                 <LanguageOutlinedIcon />
-        </StyledIconButton>
+        </IconButton>
 
         <Menu
             id='basic-menu'

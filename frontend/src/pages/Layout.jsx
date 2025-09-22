@@ -1,7 +1,8 @@
 import { Outlet, Link } from "react-router-dom"
 import LanguageSelector from "../components/LanguageSelector"
 import { useTranslation } from "react-i18next"
-import { StyledButton } from "../components/Theme"
+import { Button } from "@mui/material"
+import { theme } from "../components/Theme"
 
 export default function Layout() {
     const {t} = useTranslation()
@@ -16,8 +17,36 @@ export default function Layout() {
                             <p class="navbar-brand text-white m-2">The Sims 4 Legacy Challenge Tracker</p>
                         </div>
                         <div class="d-flex align-items-center">
-                            <StyledButton primary component={Link} to="/login">{t('login')}</StyledButton>
-                            <StyledButton secondary component={Link} to="/signup">{t('signup')}</StyledButton>
+                            <Button 
+                                sx={{
+                                    color: "black.main",
+                                    bgcolor: "white.main",
+                                    "&:hover": {
+                                        color: "black.main",
+                                        bgcolor: "primary.main"
+                                    }
+                                }}
+                                component={Link} 
+                                to="/login">
+                                    {t('login')}
+                            </Button>
+                            <Button 
+                                sx={{
+                                    color: "primary.main",
+                                    bgcolor: "black.main",
+                                    border: 1,
+                                    borderStyle: "solid",
+                                    borderColor: "primary.main",
+                                    "&:hover": {
+                                        color: "black.main",
+                                        bgcolor: "primary.main"
+                                    },
+                                    marginLeft: theme.spacing(2)
+                                }}
+                                component={Link} 
+                                to="/signup">
+                                    {t('signup')}
+                            </Button>
                             <LanguageSelector />
                         </div>
                     </div>

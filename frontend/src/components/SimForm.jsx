@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next"
-import { StyledButton } from "./Theme"
+import { Button } from "@mui/material";
 import InstantMessage from "./InstantMessage"
+import { useDispatch } from "react-redux";
+import { addSim } from "../services/simsSlice";
+import { useAddSimMutation } from "../services/simsApi";
+import { selectUser } from "../services/userSlice";
 
 export default function SimForm({props}) {
     const sim = props?.sim?.state
@@ -15,7 +19,10 @@ export default function SimForm({props}) {
     const [ageOfDeath, setAgeOfDeath] = useState(sim?.ageOfDeath || "")
     const [isDead, setIsDead] = useState(false)
     const [alert, setAlert] = useState(null)
+    const [addNewSim] = useAddSimMutation()
 
+    const dispatch = useDispatch()
+    const username = sessionStorage.getItem('user')
     const { t } = useTranslation()
 
     const onSubmit = async (e) => {
@@ -29,23 +36,17 @@ export default function SimForm({props}) {
             causeOfDeath,
             ageOfDeath
         }
-
+        
         if (props?.path == 'add') {
-            const url = `http://127.0.0.1:5000/user/${sessionStorage.getItem('user')}/add_sim`
-            const options = {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            }
-            const response = await fetch(url, options)
-            if (response.status !== 201 && response.status !== 200) {
-                const data = await response.json()
-                setAlert({ message: data.message, severity: "error"})
+            const res = await addNewSim({
+                username,
+                newSim: data
+            })
+
+            if (res.error) {
+                setAlert({ message: res.error.message, severity: "error"})
             }
             else {
-                const data = await response.json()
                 setFirstName("")
                 setLastName("")
                 setGender("")
@@ -55,7 +56,9 @@ export default function SimForm({props}) {
                 setOccupation("")
                 setIsDead(false)
                 
-                setAlert({ message: data.message, severity: "success"})
+                setAlert({ message: res.data.message, severity: "success"})
+                const sim = [res.data.sim]
+                dispatch(addSim(sim))
             }
         } else {
             const id = sim.id
@@ -206,7 +209,19 @@ export default function SimForm({props}) {
                 </div>
             </div>
             <div class="col-12">
-                <StyledButton type="submit" tertiary>{props?.path == "add" ? t("addSim") : t("save")}</StyledButton>
+                <Button 
+                    type="submit" 
+                    sx={{
+                        color: "black.main",
+                        bgcolor: "primary.main",
+                        border: "1px solid primary.main",
+                        "&:hover": {
+                            color: "black.main",
+                            bgcolor: "lightgreen.main"
+                        }
+                    }}>
+                        {props?.path == "add" ? t("addSim") : t("save")}
+                </Button>
             </div>
         </form>
         {alert && (
