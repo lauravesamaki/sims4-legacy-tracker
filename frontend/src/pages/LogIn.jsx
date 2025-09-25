@@ -24,40 +24,15 @@ export default function LogIn() {
             password: password
         }
 
-        /* const url = "http://127.0.0.1:5000/login"
-        const options = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data),
-            credentials: "include"
-        }
-
-        const response = await fetch(url, options)
-        if (response !== 201 && response.status !== 200) {
-            const data = await response.json()
-            alert(data.message)
-        } else {
-            const data = await response.json()
-            const user = data.user
-            sessionStorage.setItem('user', user)
-            navigate(`/user/${user}`)
-        } */
-
         const res = await loginUser(data)
         
         if (res?.data?.login) {
             const username = res.data.user
+            const token = res.data.csrf
+
             sessionStorage.setItem('user', username)
+            sessionStorage.setItem('csrf', token)
 
-            const options = {
-                credentials: "include"
-            }
-
-            const response = await fetch("http://127.0.0.1:5000/csrf-token", options)
-            const data = await response.json()
-            sessionStorage.setItem('csrf', data.token)
             dispatch(loginUserSlice({"user": username, "loggedIn": true}))
             navigate(`/user/${username}`)
         } else {
@@ -91,13 +66,13 @@ export default function LogIn() {
                         color: "primary.main",
                         bgcolor: "black.main",
                         border: 1,
-                        borderColor: "primary.main",
+                        borderColor: "black.main",
                         borderStyle: "solid",
                         "&:hover": {
                             color: "black.main",
                             bgcolor: "primary.main",
                             border: 1,
-                            borderColor: "black.main",
+                            borderColor: "primary.main",
                             borderStyle: "solid",
                         }
                     }}

@@ -1,12 +1,11 @@
-import { useState, useEffect } from 'react'
-import SimCard from '../components/SimCard'
+import { useSelector } from "react-redux"
+import { selectUser } from "../services/userSlice"
 
 export default function User() {
+    const user = useSelector(selectUser)    
     return (
         <div>
-            <h2>
-                User Page
-            </h2>
+            <h2>Welcome, {user.user}!</h2>
         </div>
     )
 }

@@ -21,7 +21,7 @@ export default function SimCard({props, onDelete}) {
     
 
     const handleClick = (sim) => {
-        navigate(`/user/${user.name}/edit_sim`, {state: sim})
+        navigate(`/user/${user.user}/edit_sim`, {state: sim})
     }
 
     return (
