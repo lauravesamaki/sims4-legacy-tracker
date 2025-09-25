@@ -8,6 +8,7 @@ import InstantMessage from '../../components/InstantMessage'
 import { selectUser } from '../../services/userSlice'
 import { useGetSimsQuery, useDeleteSimMutation } from "../../services/simsApi";
 import { Button } from '@mui/material'
+import {fetchWithRefresh, refreshtoken} from '../../services/refreshtoken'
 
 export default function Sims() {
     const {t} = useTranslation()
@@ -20,14 +21,25 @@ export default function Sims() {
 
     const [alert, setAlert] = useState(null)
     const [simsData, setSimsData] = useState([])
+    const [refresh, setRefresh] = useState(false)
 
     useEffect(() => {
         fetchSims()
+
     }, [data])
 
-    const fetchSims = () => {
-        setSimsData(data?.sims)
-        dispatch(addSim(data?.sims))
+    const fetchSims = async () => {
+        if (error && error.status === 302) {
+            const refreshed = await refreshtoken(dispatch, navigate)
+
+            if (refreshed) {
+                setSimsData(data?.sims)
+                dispatch(addSim(data?.sims))
+            }
+        } else {
+            setSimsData(data?.sims)
+            dispatch(addSim(data?.sims))
+        }
     }
 
     const handleDelete = async (id) => {
@@ -61,7 +73,7 @@ export default function Sims() {
                         bgcolor: "primary.main",
                         "&:hover": {
                             color: "black.main",
-                            bgcolor: "lightgreen.main",
+                            bgcolor: "white.main",
                         }
                     }}
                     >

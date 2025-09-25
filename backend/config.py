@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 import os
 from dotenv import load_dotenv, dotenv_values
 from flask_jwt_extended import JWTManager
+from datetime import timedelta
 
 load_dotenv()
 
@@ -16,6 +17,7 @@ host = os.getenv("PGHOST")
 pgdb = os.getenv("PGDATABASE")
 jwt_secret_key = os.getenv("JWT_SECRET_KEY")
 jwt_refresh_path = os.getenv("JWT_REFRESH_COOKIE_PATH")
+expire_time = os.getenv("EXPIRE_TIME")
 
 app = Flask(__name__)
 CORS(
@@ -33,6 +35,8 @@ app.config["JWT_COOKIE_SAMESITE"] = "None"
 app.config["JWT_COOKIE_SECURE"] = True
 app.config["BASE_URL"] = 'http://localhost:5000'
 app.config["JWT_COOKIE_CSRF_PROTECT"] = True 
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=int(expire_time))
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 
 db = SQLAlchemy(app)
 jwt = JWTManager(app)

@@ -4,8 +4,9 @@ import { Button } from "@mui/material";
 import InstantMessage from "./InstantMessage"
 import { useDispatch } from "react-redux";
 import { addSim } from "../services/simsSlice";
-import { useAddSimMutation } from "../services/simsApi";
-import { selectUser } from "../services/userSlice";
+import { useAddSimMutation, useEditSimMutation } from "../services/simsApi";
+import fetchWithRefresh from "../services/refreshtoken";
+import { useNavigate } from "react-router-dom";
 
 export default function SimForm({props}) {
     const sim = props?.sim?.state
@@ -20,10 +21,25 @@ export default function SimForm({props}) {
     const [isDead, setIsDead] = useState(false)
     const [alert, setAlert] = useState(null)
     const [addNewSim] = useAddSimMutation()
+    const [editSim] = useEditSimMutation()
 
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const username = sessionStorage.getItem('user')
     const { t } = useTranslation()
+
+    function resetForm(res) {
+        setFirstName("")
+        setLastName("")
+        setGender("")
+        setAgeOfDeath("")
+        setCauseOfDeath("")
+        setOccult("")
+        setOccupation("")
+        setIsDead(false)
+
+        setAlert({ message: res.data.message, severity: "success"})
+    }
 
     const onSubmit = async (e) => {
         e.preventDefault()
@@ -38,57 +54,31 @@ export default function SimForm({props}) {
         }
         
         if (props?.path == 'add') {
-            const res = await addNewSim({
+            const req = () => addNewSim({
                 username,
                 newSim: data
             })
+            let res = await fetchWithRefresh(req, dispatch, navigate)
 
             if (res.error) {
-                setAlert({ message: res.error.message, severity: "error"})
-            }
-            else {
-                setFirstName("")
-                setLastName("")
-                setGender("")
-                setAgeOfDeath("")
-                setCauseOfDeath("")
-                setOccult("")
-                setOccupation("")
-                setIsDead(false)
-                
-                setAlert({ message: res.data.message, severity: "success"})
+                setAlert({ message: "Error in adding sim", severity: "error"})
+            } else {
+                resetForm(res)
                 const sim = [res.data.sim]
                 dispatch(addSim(sim))
             }
         } else {
             const id = sim.id
-            const url = `http://127.0.0.1:5000/sim/${id}`
-            const options = {
-                method: "PATCH",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    "Content-Type": "application/json",
-                    Accept: 'application/json'
-                },
-                body: JSON.stringify(data)
-            }
-            const response = await fetch(url, options)
-            if (response.status !== 201 && response.status !== 200) {
-                const data = await response.json()
-                setAlert({ message: data.message, severity: "error"})
-            }
-            else {
-                const data = await response.json()
-                setFirstName("")
-                setLastName("")
-                setGender("")
-                setAgeOfDeath("")
-                setCauseOfDeath("")
-                setOccult("")
-                setOccupation("")
-                setIsDead(false)
+            const req = () => editSim({
+                id,
+                sim: data
+            })
+            let res = await fetchWithRefresh(req, dispatch, navigate)
 
-                setAlert({ message: data.message, severity: "success"})
+            if (res.error) {
+                setAlert({ message: "Error in editing sim", severity: "error"})
+            } else {
+                resetForm(res)
             }
         }
     }

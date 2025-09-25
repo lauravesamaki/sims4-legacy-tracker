@@ -56,8 +56,9 @@ def login():
     if user and bcrypt.check_password_hash(user.password, password):
         access_token = create_access_token(identity=str(user.id), fresh=True)
         refresh_token = create_refresh_token(user.id)
+        csrf = get_csrf_token(access_token)
 
-        res = jsonify({'login': True, 'user': username})
+        res = jsonify({'login': True, 'user': username, 'csrf': csrf})
         res.headers['csrf_access_token'] = get_csrf_token(access_token)
         res.headers['csrf_refresh_token'] = get_csrf_token(refresh_token)
         set_access_cookies(res, access_token)
@@ -71,15 +72,15 @@ def login():
 @jwt_required(refresh=True, locations=["cookies"])
 def refresh():
     current_user = get_jwt_identity()
-    new_token = create_access_token(identity=str(current_user))
-    res = make_response(redirect(app.config['BASE_URL'] + '/', 302))
+    new_token = create_access_token(identity=str(current_user), fresh=True)
+    csrf = get_csrf_token(new_token)
+    res = jsonify({"message": "Done", "csrf": csrf})
     set_access_cookies(res, new_token)
     return res
 
 @jwt.expired_token_loader
-def expired_token_callback(callback):
-    res = make_response(redirect(app.config['BASE_URL'] + '/refresh'))
-    unset_access_cookies(res)
+def expired_token_callback(jwt_headers, jwt_payload):
+    res = jsonify({"message": "Token expired"})
     return res, 302
 
 @app.route("/token/remove", methods=["POST"])
