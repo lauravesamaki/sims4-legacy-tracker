@@ -8,7 +8,8 @@ import InstantMessage from '../../components/InstantMessage'
 import { selectUser } from '../../services/userSlice'
 import { useGetSimsQuery, useDeleteSimMutation } from "../../services/simsApi";
 import { Button } from '@mui/material'
-import {fetchWithRefresh, refreshtoken} from '../../services/refreshtoken'
+import { refreshtoken } from '../../services/refreshtoken'
+import {theme} from '../../components/Theme'
 
 export default function Sims() {
     const {t} = useTranslation()
@@ -59,15 +60,19 @@ export default function Sims() {
             </div>
         ) : 'There are no sims yet!'
 
-    const handleClick = () => {
-        navigate(`/user/${user.user}/add_sim`)
+    function handleClick(page){
+        if(page === 'sim') {
+            navigate(`/user/${user.user}/add_sim`)
+        } else {
+            navigate(`/user/${user.user}/relationships/add_relationship`)
+        }
     }
 
     return (
         <div class="mt-4">
             <div>
                 <Button 
-                    onClick={handleClick}
+                    onClick={() => handleClick('sim')}
                     sx={{
                         color: "black.main",
                         bgcolor: "primary.main",
@@ -78,6 +83,19 @@ export default function Sims() {
                     }}
                     >
                         {t('addSim')}
+                </Button>
+                <Button
+                    onClick={() => handleClick('rel')}
+                    sx={{
+                        color: "black.main",
+                        bgcolor: "primary.main",
+                        marginLeft: theme.spacing(2),
+                        "&:hover": {
+                            color: "black.main",
+                            bgcolor: "white.main",
+                        }
+                    }}>
+                    {t("addRelationship")}
                 </Button>
             </div>
             <div class="row row-cols-1 row-cols-md-3 mt-4">

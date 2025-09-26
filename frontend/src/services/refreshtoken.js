@@ -1,6 +1,6 @@
 import { logoutUser } from "./userSlice"
 
-async function refreshtoken(dispatch, navigate) {
+export async function refreshtoken(dispatch, navigate) {
     const url = 'http://127.0.0.1:5000/refresh'
     const options = {
         credentials: 'include'
@@ -20,7 +20,7 @@ async function refreshtoken(dispatch, navigate) {
     }
 }
 
-async function fetchWithRefresh(req,dispatch,navigate) {
+export async function fetchWithRefresh(req,dispatch,navigate) {
     let res = await req()
 
     if (res?.error && res.error.status === 302) {
@@ -32,9 +32,4 @@ async function fetchWithRefresh(req,dispatch,navigate) {
     }
 
     return res
-}
-
-export {
-    refreshtoken,
-    fetchWithRefresh
 }

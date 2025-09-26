@@ -5,7 +5,7 @@ import InstantMessage from "./InstantMessage"
 import { useDispatch } from "react-redux";
 import { addSim } from "../services/simsSlice";
 import { useAddSimMutation, useEditSimMutation } from "../services/simsApi";
-import fetchWithRefresh from "../services/refreshtoken";
+import { fetchWithRefresh } from "../services/refreshtoken";
 import { useNavigate } from "react-router-dom";
 
 export default function SimForm({props}) {

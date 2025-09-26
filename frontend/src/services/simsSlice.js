@@ -42,5 +42,5 @@ const simSlice = createSlice({
 })
 
 export const {addSim, removeSim, updateSim, emptySims} = simSlice.actions
-export const selectSims = (state) => state.sims.simsList
+export const selectSims = (state) => state.sims
 export default simSlice.reducer
