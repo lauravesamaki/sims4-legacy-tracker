@@ -51,6 +51,10 @@
     "delete": "Poista",
     "save": "Tallenna",
     "createNewTree": "Luo uusi sukupuu",
+    "addRelationship": "Lisää suhde",
+    "selectFirstSim": "Valitse Ensimmäinen Sim",
+    "selectSecondSim": "Valitse Toinen Sim",
+    "selectRelationshipType": "Valitse Suhteen Tyyppi",
 
     "text": "Tervetuloa The Sims 4 Legacy Challenge Trackeriin! Täällä voit tallentaa simejäsi ja heidän sukupuitaan, kerrata haasteen säännöt sekä käyttää erilaisia arpomiskäyttöön tarkoitettuja noppia ja generaattoreita."
 }

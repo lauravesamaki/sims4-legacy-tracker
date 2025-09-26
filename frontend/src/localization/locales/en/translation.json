@@ -51,7 +51,10 @@
     "delete": "Delete",
     "save": "Save",
     "createNewTree": "Create new tree",
-
+    "addRelationship": "Add Relationship",
+    "selectFirstSim": "Select First Sim",
+    "selectSecondSim": "Select Second Sim",
+    "selectRelationshipType": "Select Relationship Type",
 
     "text": "Welcome to The Sims 4 Legacy Challenge Tracker! Here you can save your sims and their family trees, read the challenge's rules and use different randomizers for your gameplay."
 }
