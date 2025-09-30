@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from "@mui/material"
 import { useTranslation } from "react-i18next"
 import { useDispatch } from "react-redux"
+import { useAddUserMutation } from "../services/userApi"
+import { loginUser } from "../services/userSlice"
+import InstantMessage from "../components/InstantMessage"
 
 export default function SignUp() {
     const [username, setUsername] = useState("")
@@ -10,6 +13,8 @@ export default function SignUp() {
     const navigate = useNavigate()
     const { t } = useTranslation()
     const dispatch = useDispatch()
+    const [addUser] = useAddUserMutation()
+    const [alert, setAlert] = useState(null)
 
     const onSubmit = async (e) => {
         e.preventDefault()
@@ -19,25 +24,19 @@ export default function SignUp() {
             password
         }
 
-        const url = "http://127.0.0.1:5000/signup"
-        const options = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        }
+        const res = await addUser(data)
 
-        const response = await fetch(url, options)
-        if (response !== 201 && response.status !== 200) {
-            const data = await response.json()
-            alert(data.message)
-        } else {
-            const data = await response.json()
-            sessionStorage.setItem("token", data.access_token)
-            const username = data.user
-            dispatch(loginUser(username))
+        if(res?.data?.addedUser) {
+            const username = res.data.user
+            const token = res.data.csrf
+
+            sessionStorage.setItem('user', username)
+            sessionStorage.setItem('csrf', token)
+
+            dispatch(loginUser({"user": username, "loggedIn": true}))
             navigate(`/user/${username}`)
+        } else {
+            setAlert({ message: res.error.message, severity: "error"})
         }
     }
 
@@ -62,6 +61,7 @@ export default function SignUp() {
                 onChange={(e) => setPassword(e.target.value)}
                 />
                 <Button
+                    type="submit"
                     sx={{
                         color: "primary.main",
                         bgcolor: "black.main",
@@ -79,6 +79,9 @@ export default function SignUp() {
                     {t('signup')}
                 </Button>
             </form>
+            {alert && (
+                <InstantMessage message={alert.message} severity={alert.severity} />
+            )}
         </div>
     </>
 }
