@@ -4,8 +4,10 @@ import storage from 'redux-persist/lib/storage';
 import { simsApi } from './services/simsApi'
 import simReducer from './services/simsSlice'
 import userReducer from './services/userSlice'
-import treeReducer from './services/treeSlice'
 import { userApi } from './services/userApi'
+import { relationshipsApi } from './services/relationshipsApi';
+import { treeApi } from './services/treeApi';
+import treeReducer from './services/treeSlice'
 
 const persistConfig = {
     key:'root',
@@ -17,7 +19,9 @@ const rootReducer =  combineReducers({
     user: userReducer,
     trees: treeReducer,
     [simsApi.reducerPath]: simsApi.reducer,
-    [userApi.reducerPath]: userApi.reducer
+    [userApi.reducerPath]: userApi.reducer,
+    [relationshipsApi.reducerPath]: relationshipsApi.reducer,
+    [treeApi.reducerPath]: treeApi.reducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -25,7 +29,12 @@ const persistedReducer = persistReducer(persistConfig, rootReducer)
 const store = configureStore({
     reducer: persistedReducer,
     middleware: (getDefaultMiddleware) => 
-        getDefaultMiddleware().concat(simsApi.middleware, userApi.middleware)
+        getDefaultMiddleware().concat(
+            simsApi.middleware, 
+            userApi.middleware, 
+            relationshipsApi.middleware,
+            treeApi.middleware
+        )
 })
 
 

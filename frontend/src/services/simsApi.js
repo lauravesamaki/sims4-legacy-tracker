@@ -50,4 +50,8 @@ export const simsApi = createApi({
     })
 })
 
-export const { useGetSimsQuery, useAddSimMutation, useEditSimMutation, useDeleteSimMutation } = simsApi
+export const { 
+    useGetSimsQuery, 
+    useAddSimMutation, 
+    useEditSimMutation, 
+    useDeleteSimMutation } = simsApi

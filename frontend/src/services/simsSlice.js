@@ -19,7 +19,7 @@ const simSlice = createSlice({
             if (state.simsList) {
                 console.log(payload)
                 const newSims = payload.filter(
-                newSim => !state.simsList.some(oldSim => oldSim.id === newSim.id)
+                    newSim => !state.simsList.some(oldSim => oldSim.id === newSim.id)
                 )
                 state.simsList.push(...newSims)
             } else {
