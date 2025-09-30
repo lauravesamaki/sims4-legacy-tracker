@@ -1,6 +1,6 @@
 from flask import request, jsonify, make_response, redirect
 from config import app, db, jwt
-from models import Sim, Relationship, User
+from models import Sim, Relationship, User, FamilyTree
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import (
     create_access_token,
@@ -37,8 +37,8 @@ def signup():
         db.session.add(new_user)
         db.session.commit()
         access_token = create_access_token(identity=str(new_user.id),fresh=True)
-        refresh_token = create_refresh_token(new_user.id)
-        return jsonify({"message": "New user has been added!", "access_token": access_token, "refresh_tone": refresh_token}), 201
+        csrf = get_csrf_token(access_token)
+        return jsonify({"addedUser": True, "user": username, "csrf": csrf}), 201
     except Exception as e:
         return jsonify({"message": str(e)}), 400
     
@@ -169,9 +169,8 @@ def add_sim(username):
 
     user = db.session.scalars(select(User).where(User.username == username)).first()
 
-
     if not user:
-        jsonify({"message": "You cannot add sim!"}), 400
+        return jsonify({"message": "User not found"}), 404
 
     user_id = user.id
 
@@ -182,12 +181,6 @@ def add_sim(username):
         )
     
     new_sim = Sim(first_name=first_name, last_name=last_name, gender=gender, occult=occult, cause_of_death=cause_of_death, age_of_death=age_of_death, occupation=occupation, user_id=user_id)
-    
-
-    if not user:
-        return jsonify({"message": "User not found"}), 404
-    
-    # add new sim to user's list of sims
 
     try:
         db.session.add(new_sim)
@@ -247,20 +240,18 @@ RELATIONSHIP_MAP = {
     "grandchild": "grandparent"
 }
 
-@app.route("/sim/<int:sim_id>/relationships", methods=["POST"])
+@app.route("/relationships/add_relationship", methods=["POST"])
 @jwt_required(fresh=True, locations=["cookies"])
-def add_relationship(sim_id):
+def add_relationship():    
+    data = request.json
+    sim_id = data.get("simId")
+    related_to_id = data.get("relatedToId")
+    relationship_type = data.get("relationshipType")
+
     sim = db.session.scalars(select(Sim).where(Sim.id == sim_id)).first()
-    #Sim.query.get(sim_id)
 
     if not sim:
         return jsonify({"message": "Sim not found"}), 404
-    
-    sim_id = sim.id
-
-    data = request.json
-    related_to_id = data.get("relatedToId")
-    relationship_type = data.get("relationshipType")
 
     inverse_type = RELATIONSHIP_MAP.get(relationship_type)
 
@@ -282,7 +273,7 @@ def add_relationship(sim_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 400
     
-@app.route("/tree/<int:relationship_id>", methods=["DELETE"])
+@app.route("/relationships/<int:relationship_id>", methods=["DELETE"])
 @jwt_required(fresh=True, locations=["cookies"])
 def delete_relationship(relationship_id):
     relationship = db.session.scalars(select(Relationship).where(Relationship.id == relationship_id)).first()
@@ -304,7 +295,7 @@ def delete_relationship(relationship_id):
 
     return jsonify({"message": "Relationships succesfully deleted!"}), 200
 
-@app.route("/tree/<int:relationship_id>", methods=["PATCH"])
+@app.route("/relationships/<int:relationship_id>/edit", methods=["PATCH"])
 @jwt_required(fresh=True, locations=["cookies"])
 def edit_relationship(relationship_id):
     relationship = db.session.scalars(select(Relationship).where(Relationship.id == relationship_id)).first()
@@ -320,6 +311,91 @@ def edit_relationship(relationship_id):
     db.session.commit()
 
     return jsonify({"message": "Relationship updated"}), 200
+
+# Familytree routes
+@app.route("/user/<username>/trees", methods=["GET"])
+@jwt_required(fresh=True, locations=["cookies"])
+def get_trees(username):
+    user = db.session.scalars(select(User).where(User.username == username)).first()
+
+    if not user:
+        return jsonify({"message": "user not found"}), 404
+    
+    trees = db.session.scalars(select(FamilyTree).where(FamilyTree.user_id == user.id))
+
+    trees_json = list(map(lambda x: x.to_json(), trees))
+
+    return jsonify({"trees": trees_json}), 200
+
+@app.route("/trees/add", methods=["POST"])
+@jwt_required(fresh=True, locations=["cookies"])
+def add_tree():
+    data = request.json
+    name = data.get("name")
+    user_id = data.get("userId")
+    sim_ids = data.get("sims", [])
+
+    user = db.session.scalars(select(User).where(User.id == user_id)).first()
+
+    if not user:
+        return (
+            jsonify({"message": "You cannot add sim!"}), 400)
+
+    if not name:
+        return (
+            jsonify({"message": "You must include name"}), 400)
+
+    sims = db.session.scalars(select(Sim).where(Sim.id.in_(sim_ids))).all()
+
+    new_tree = FamilyTree(name=name, user_id=user_id)
+    new_tree.sims = sims
+
+    try:
+        db.session.add(new_tree)
+        db.session.commit()
+        tree = new_tree.to_json()
+        return jsonify({
+            "message": "New tree has been created!", 
+            "tree": tree}), 201
+    except Exception as e:
+        return jsonify({"message": str(e)}), 400
+    
+@app.route("/trees/<int:tree_id>/edit", methods=["PATCH"])
+@jwt_required(fresh=True, locations=["cookies"])
+def edit_tree(tree_id):
+    tree = db.session.scalars(select(FamilyTree).where(FamilyTree.id == tree_id)).first()
+
+    if not tree:
+        return(
+            jsonify({"message": "Tree not found"}), 404
+        )
+    
+    data = request.json
+    sim_ids = data.get("sims", [])
+    sims = db.session.scalars(select(Sim).where(Sim.id.in_(sim_ids))).all()
+    
+    tree.name = data.get("name", tree.name)
+    if sims and tree.sims != sims:
+        tree.sims = sims
+    else:
+        tree.sims = tree.sims
+
+    db.session.commit()
+
+    return jsonify({"message": "Tree has been edited!"}), 200
+
+@app.route("/trees/<int:tree_id>", methods=["DELETE"])
+@jwt_required(fresh=True, locations=["cookies"])
+def delete_tree(tree_id):
+    tree = db.session.scalars(select(FamilyTree).where(FamilyTree.id == tree_id)).first()
+
+    if not tree:
+        return jsonify({"message": "Tree not found"}), 404
+    
+    db.session.delete(tree)
+    db.commit()
+
+    return jsonify({"message": "Tree deleted succesfully!"}), 200
 
 if __name__ == "__main__":
     with app.app_context():

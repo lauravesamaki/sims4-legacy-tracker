@@ -1,8 +1,32 @@
 from config import db
-from sqlalchemy import Sequence, ForeignKey, Integer, String, DateTime, Text, ARRAY, Column
+from sqlalchemy import (
+    Sequence, 
+    ForeignKey, 
+    Integer, 
+    String, 
+    DateTime, 
+    Text, 
+    Column,
+    Table
+)
 from datetime import datetime
 from sqlalchemy.orm import relationship
 
+familytree_sims = db.Table(
+    "familytree_sims",
+    db.Column(
+        "familytree_id", 
+        Integer, 
+        ForeignKey("familytrees.id"), 
+        primary_key=True
+    ),
+    db.Column(
+        "sim_id",
+        Integer,
+        ForeignKey("sims.id"),
+        primary_key=True
+    )
+)
 class Sim(db.Model):
     __tablename__ = "sims"
     id = Column(Integer, Sequence("sim_id_seq", start=1), primary_key=True)
@@ -30,6 +54,11 @@ class Sim(db.Model):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     user = relationship("User", back_populates="sims")
 
+    trees = relationship(
+        "FamilyTree",
+        secondary=familytree_sims,
+        back_populates="sims"
+    )
 
     OCCULT_MAP = {
         1: "human",
@@ -58,7 +87,8 @@ class Sim(db.Model):
             "occupation": self.occupation,
             "relationships": [r.id for r in self.relationships],
             "relatedTo": [r.id for r in self.related_to],
-            "userId": self.user_id
+            "userId": self.user_id,
+            "trees": [tree.id for tree in self.trees]
         }
     
 class Relationship(db.Model):
@@ -68,8 +98,16 @@ class Relationship(db.Model):
     related_sim_id = Column(Integer, ForeignKey("sims.id"), nullable=False)
     relationship_type = Column(String(64), nullable=False)
 
-    sim = relationship("Sim", foreign_keys=[sim_id], back_populates="relationships")
-    related_to = relationship("Sim", foreign_keys=[related_sim_id], back_populates="related_to")
+    sim = relationship(
+        "Sim", 
+        foreign_keys=[sim_id], 
+        back_populates="relationships"
+    )
+    related_to = relationship(
+        "Sim", 
+        foreign_keys=[related_sim_id], 
+        back_populates="related_to"
+    )
 
     def to_json(self):
         return {
@@ -86,7 +124,16 @@ class User(db.Model):
     password = Column(Text, nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.today)
     modified_at = Column(DateTime)
-    sims = relationship("Sim", back_populates="user")
+    sims = relationship(
+        "Sim", 
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+    trees = relationship(
+        "FamilyTree", 
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
 
     def to_json(self):
         return {
@@ -94,6 +141,37 @@ class User(db.Model):
             "username": self.username,
             "password": self.password,
             "sims": [sim.id for sim in self.sims],
+            "trees": [tree.id for tree in self.trees],
             "createdAt": self.created_at,
             "modifiedAt": self.modified_at
+        }
+    
+class FamilyTree(db.Model):
+    __tablename__ = "familytrees"
+    id = Column(Integer, Sequence("familytree_id_seq", start=1), primary_key=True)
+    name = Column(String(64), nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.today)
+    modified_at = Column(DateTime)
+
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user = relationship("User", back_populates="trees")
+
+    sims = relationship(
+        "Sim", 
+        secondary=familytree_sims,
+        back_populates="trees"
+    )
+
+    def to_json(self, include_sims: bool = False):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "sims": (
+                [sim.to_json() for sim in self.sims]
+                if include_sims else
+                [sim.id for sim in self.sims]
+            ),
+            "createdAt": self.created_at,
+            "modifiedAt": self.modified_at,
+            "user": self.user_id
         }
