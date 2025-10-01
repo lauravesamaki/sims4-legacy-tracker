@@ -8,7 +8,7 @@ export default function Trees() {
     const username = sessionStorage.getItem('user')
 
     const handleClick = () => {
-        navigate(`/user/${username}/trees/add_tree`)
+        navigate(`/user/${username}/trees/add`)
     }
 
     return <>

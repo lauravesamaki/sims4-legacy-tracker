@@ -24,6 +24,7 @@ import EditSim from './pages/sims/EditSim'
 import Sims from './pages/sims/Sims'
 import Trees from './pages/tree/Trees'
 import AddRelationship from './pages/relationship/AddRelationship'
+import AddTree from './pages/tree/AddTree'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -38,8 +39,9 @@ createRoot(document.getElementById('root')).render(
                   <Route path='/user/:usernmae/sims' element={<Sims />} />
                   <Route path='/user/:username/add_sim' element={<AddSim />} />
                   <Route path='/user/:username/edit_sim' element={<EditSim />} />
-                  <Route path='/user/:username/relationships/add_relationship' element={<AddRelationship />} />
+                  <Route path='/user/:username/relationships/add' element={<AddRelationship />} />
                   <Route path='/user/:username/trees' element={<Trees />} />
+                  <Route path='/user/:username/trees/add' element={<AddTree />} />
                 </Route>
               </Route>
               <Route path='/' element={<Layout />}>
