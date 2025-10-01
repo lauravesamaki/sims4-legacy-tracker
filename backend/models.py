@@ -85,8 +85,7 @@ class Sim(db.Model):
             "causeOfDeath": self.cause_of_death,
             "ageOfDeath": self.age_of_death,
             "occupation": self.occupation,
-            "relationships": [r.id for r in self.relationships],
-            "relatedTo": [r.id for r in self.related_to],
+            "relationships": ([r.to_json() for r in self.relationships]),
             "userId": self.user_id,
             "trees": [tree.id for tree in self.trees]
         }

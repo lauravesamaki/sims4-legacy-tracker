@@ -149,6 +149,7 @@ def update_user(user_id):
 def get_sims(username):
     user = db.session.scalars(select(User).where(User.username == username)).first()
     sims = db.session.scalars(select(Sim).where(Sim.user_id == user.id))
+    
     json_sims = list(map(lambda x: x.to_json(), sims))
     return jsonify({"sims": json_sims})
 
@@ -240,7 +241,19 @@ RELATIONSHIP_MAP = {
     "grandchild": "grandparent"
 }
 
-@app.route("/relationships/add_relationship", methods=["POST"])
+@app.route("/sim/<int:sim_id>", methods=["GET"])
+@jwt_required(fresh=True, locations=["cookies"])
+def get_relationships(sim_id):
+    sim = db.session.scalars(select(Sim).where(Sim.id == sim_id)).first()
+
+    if not sim:
+        return jsonify({"message": "Sim not found"}), 404
+    
+    relationships = db.session.scalars(select(Relationship).where(Relationship.sim_id == sim.id))
+    json_relationships = list(map(lambda x: x.to_json(), relationships))
+    return jsonify({"relationships": json_relationships})
+
+@app.route("/relationships/add", methods=["POST"])
 @jwt_required(fresh=True, locations=["cookies"])
 def add_relationship():    
     data = request.json
@@ -258,7 +271,7 @@ def add_relationship():
     if not related_to_id:
         return jsonify({"message": "You must add both sims' id to relationship"}), 400
     
-    existing = db.session.scalars(select(Relationship).where(Relationship.sim_id == sim_id & Relationship.related_to_id == related_to_id & Relationship.relationship_type == relationship_type)).first()
+    existing = db.session.scalars(select(Relationship).where(Relationship.sim_id == sim_id and Relationship.related_sim_id == related_to_id and Relationship.relationship_type == relationship_type)).first()
     
     if existing:
         return existing
