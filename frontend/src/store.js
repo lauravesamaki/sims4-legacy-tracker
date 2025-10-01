@@ -5,6 +5,7 @@ import { simsApi } from './services/simsApi'
 import simReducer from './services/simsSlice'
 import userReducer from './services/userSlice'
 import { userApi } from './services/userApi'
+import relationshipReducer from './services/relationshipSlice'
 import { relationshipsApi } from './services/relationshipsApi';
 import { treeApi } from './services/treeApi';
 import treeReducer from './services/treeSlice'
@@ -18,6 +19,7 @@ const rootReducer =  combineReducers({
     sims: simReducer,
     user: userReducer,
     trees: treeReducer,
+    relationships: relationshipReducer,
     [simsApi.reducerPath]: simsApi.reducer,
     [userApi.reducerPath]: userApi.reducer,
     [relationshipsApi.reducerPath]: relationshipsApi.reducer,

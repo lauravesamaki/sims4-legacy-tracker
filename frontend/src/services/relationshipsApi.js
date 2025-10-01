@@ -8,6 +8,13 @@ export const relationshipsApi = createApi({
     }),
     tagTypes: ['Relationships'],
     endpoints: (builder) => ({
+        getRelationships: builder.query({
+            query: (id) => ({
+                url: `/sim/${id}`,
+                method: 'GET'
+            }),
+            providesTags: ['Relationships']
+        }),
         addRelationship: builder.mutation({
             query: (relationship) => ({
                 url: '/relationships/add',
@@ -44,6 +51,7 @@ export const relationshipsApi = createApi({
 })
 
 export const { 
+    useGetRelationshipsQuery,
     useAddRelationshipMutation, 
     useEditRelationshipMutation, 
     useDeleteRelationshipMutation } = relationshipsApi

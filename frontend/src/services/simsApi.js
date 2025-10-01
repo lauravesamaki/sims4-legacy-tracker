@@ -13,7 +13,8 @@ export const simsApi = createApi({
                 url: `/user/${username}/sims`,
                 method: 'GET'
             }),
-            providesTags: ['Sims']
+            providesTags: ['Sims'],
+            keepUnusedDataFor: 30
         }),
         addSim: builder.mutation({
             query: ({username, newSim}) => ({
