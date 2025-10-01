@@ -10,6 +10,7 @@ import { useGetSimsQuery, useDeleteSimMutation } from "../../services/simsApi";
 import { Button } from '@mui/material'
 import { refreshtoken } from '../../services/refreshtoken'
 import {theme} from '../../components/Theme'
+import { addRelationships } from '../../services/relationshipSlice'
 
 export default function Sims() {
     const {t} = useTranslation()
@@ -17,20 +18,17 @@ export default function Sims() {
     const dispatch = useDispatch()
     const simsList = useSelector(selectSims)
     const user = useSelector(selectUser)
-    const { data, error, isLoading } = useGetSimsQuery(user.user)
     const [deleteSim] = useDeleteSimMutation()
-
+    const { data, error, isLoading } = useGetSimsQuery(user.user)
     const [alert, setAlert] = useState(null)
     const [simsData, setSimsData] = useState([])
-    const [refresh, setRefresh] = useState(false)
 
     useEffect(() => {
         fetchSims()
-
     }, [data])
 
     const fetchSims = async () => {
-        if (error && error.status === 302) {
+        if (!data || (error && error.status === 302)) {
             const refreshed = await refreshtoken(dispatch, navigate)
 
             if (refreshed) {
@@ -39,7 +37,7 @@ export default function Sims() {
             }
         } else {
             setSimsData(data?.sims)
-            dispatch(addSim(data?.sims))
+            dispatch(addSim(data?.sims))            
         }
     }
 
@@ -64,12 +62,13 @@ export default function Sims() {
         if(page === 'sim') {
             navigate(`/user/${user.user}/add_sim`)
         } else {
-            navigate(`/user/${user.user}/relationships/add_relationship`)
+            navigate(`/user/${user.user}/relationships/add`)
         }
     }
 
     return (
         <div class="mt-4">
+            <h2>{t('sims')}</h2>
             <div>
                 <Button 
                     onClick={() => handleClick('sim')}
