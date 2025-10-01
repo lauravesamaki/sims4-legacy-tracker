@@ -7,7 +7,7 @@ export default function Tree() {
         <div class="container-fluid mt-4 card card-add-sim text-bg-dark mb-4">
             <div class="card-body">
                 <h3 class="mb-4 card-header">{t("addRelationship")}</h3>
-                <RelationshipForm />
+                <RelationshipForm path='add' />
             </div>
         </div>        
     )
